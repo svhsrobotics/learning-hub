@@ -1,0 +1,308 @@
+/* Saucon Valley Robotics Learning Hub: look and feel.
+   Panther red from the school district's website, a modern font (Figtree),
+   bigger text, a light menu with an icon for every page, and shared
+   "kit" styles (pictures, cards, why lines, traps) that every page can use.
+   This file sits on top of Docsify's "vue" theme and only changes what we need. */
+
+:root {
+  --sv-red: #A60012;        /* Panther red: links, highlights */
+  --sv-red-dark: #7d000d;   /* red for hover */
+  --sv-red-tint: #fbecee;   /* very light red for active menu item and notes */
+  --sv-ink: #18181b;        /* main text */
+  --sv-grey: #5f5f66;       /* secondary text */
+  --sv-line: #e7e3e4;       /* borders */
+  --sv-paper: #ffffff;      /* page background */
+  --sv-side: #f7f5f5;       /* menu background */
+  --sv-shade: #f6f4f4;      /* code and table header background */
+  --sv-yellow: #f6c700;     /* POLLEN yellow, used for "watch out" boxes */
+  --sv-yellow-tint: #fff7d6;
+  --sv-green: #2e7d32;
+  --sv-green-tint: #e8f5e9;
+  --sv-blue: #1f5fd1;
+  --sv-blue-tint: #e9f0fc;
+
+  --theme-color: var(--sv-red);
+  --font: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--sv-ink);
+  background: var(--sv-paper);
+  font-size: 18px;
+}
+
+/* ================= Menu (sidebar) ================= */
+.sidebar {
+  background: var(--sv-side);
+  border-right: 1px solid var(--sv-line);
+  color: var(--sv-ink);
+  padding-top: 0;
+  width: 300px;
+  display: flex; flex-direction: column;   /* lets the logo sit above the search box */
+}
+.sidebar > h1 { order: -1; }
+.sidebar-nav { flex: 1 0 auto; }
+.sidebar > h1 { margin: 0; padding: 22px 20px 16px; text-align: left; }
+.sidebar > h1 .app-name-link { display: flex; align-items: center; gap: 12px; color: var(--sv-ink); text-decoration: none; }
+.brand-mark {
+  flex: 0 0 42px; width: 42px; height: 42px; border-radius: 11px;
+  background: var(--sv-red); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(166, 0, 18, 0.3);
+}
+.brand-mark svg { width: 26px; height: 26px; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; font-size: 21px; font-weight: 800; letter-spacing: -0.2px; }
+.brand-text small { font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--sv-red); margin-bottom: 3px; }
+
+/* Search box */
+.sidebar .search { border-bottom: 0; margin: 0; padding: 0 16px 10px; }
+.sidebar .search .input-wrap {
+  background: #fff; border: 1px solid var(--sv-line); border-radius: 10px;
+  padding-left: 34px; position: relative;
+}
+.sidebar .search .input-wrap::before {
+  content: ""; position: absolute; left: 11px; top: 50%; width: 16px; height: 16px; margin-top: -8px;
+  background: var(--sv-grey);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.sidebar .search input { background: transparent; color: var(--sv-ink); font-family: var(--font); font-size: 16px; padding: 10px 8px 10px 0; }
+.sidebar .search input::placeholder { color: #8b8b92; }
+.sidebar .search .results-panel a { color: var(--sv-ink); }
+.sidebar .search .matching-post { border-bottom-color: var(--sv-line); }
+.sidebar .search p { color: var(--sv-grey); font-size: 15px; }
+.sidebar .search .search-keyword { color: var(--sv-red); font-style: normal; font-weight: 700; }
+.sidebar .search .clear-button svg { fill: var(--sv-grey); }
+
+/* Menu groups and pages */
+.sidebar-nav { padding: 4px 12px 40px; }
+.sidebar ul { margin: 0; padding: 0; }
+.sidebar ul li { margin: 1px 0; }
+.sidebar ul li strong {
+  display: block; color: var(--sv-grey);
+  font-size: 14px; font-weight: 800; letter-spacing: 0.3px;
+  margin: 18px 0 4px 10px;
+}
+.sidebar ul li a {
+  display: flex; align-items: center; gap: 11px;
+  color: #2b2b30; font-size: 16.5px; font-weight: 500; line-height: 1.3;
+  white-space: normal; padding: 8px 10px; margin: 0; border-radius: 9px;
+  border: 0;
+}
+.sidebar ul li a:hover { background: #eeeaea; color: var(--sv-ink); text-decoration: none; }
+.sidebar ul li.active > a {
+  background: var(--sv-red-tint); color: var(--sv-red); font-weight: 700; border-right: 0;
+}
+/* The headings of the open page, listed under it */
+.sidebar ul li ul.app-sub-sidebar { margin: 2px 0 8px 22px; border-left: 2px solid var(--sv-line); }
+.sidebar ul li ul.app-sub-sidebar li a { font-size: 14.5px; font-weight: 500; color: var(--sv-grey); padding: 5px 10px; border-radius: 0 7px 7px 0; }
+.sidebar ul li ul.app-sub-sidebar li.active > a { background: transparent; color: var(--sv-red); }
+.app-sub-sidebar li:before { content: none; }
+
+/* An icon in front of every page in the menu (picked by the page's address) */
+.sidebar-nav > ul > li > ul:not(.app-sub-sidebar) > li > a::before,
+.sidebar-nav > ul > li > a::before {
+  content: ""; flex: 0 0 20px; width: 20px; height: 20px;
+  background: currentColor; opacity: 0.85;
+  -webkit-mask: var(--ico) center/contain no-repeat; mask: var(--ico) center/contain no-repeat;
+}
+/* The plain page icon, for any page without its own line below (kept weaker than those lines on purpose) */
+.sidebar-nav a::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l4 4v14H6z'/%3E%3Cpath d='M9 12h7M9 16h5'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/"]::before, .sidebar a[href="#/README"]::before, .sidebar a[href="#/home"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/java-basics"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 4c-2 0-3 1-3 3v3l-2 2 2 2v3c0 2 1 3 3 3M16 4c2 0 3 1 3 3v3l2 2-2 2v3c0 2-1 3-3 3'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/first-opmode"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8h12a4 4 0 0 1 4 4v2a3 3 0 0 1-5 2l-2-2H9l-2 2a3 3 0 0 1-5-2v-2a4 4 0 0 1 4-4z'/%3E%3Cpath d='M7 11v3M5.5 12.5h3'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/laptop-to-robot"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='5' width='10' height='7' rx='1'/%3E%3Cpath d='M1 15h12M14 9h4M16 7l2 2-2 2'/%3E%3Crect x='19' y='5' width='4' height='8' rx='1'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/sample-robot-code"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='4' width='12' height='16' rx='2'/%3E%3Cpath d='M3 6v4M3 14v4M21 6v4M21 14v4'/%3E%3Ccircle cx='12' cy='14' r='2.5'/%3E%3Cpath d='M9 7h6'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/one-file-to-objects"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='8' height='8' rx='1'/%3E%3Crect x='13' y='3' width='8' height='8' rx='1'/%3E%3Crect x='8' y='13' width='8' height='8' rx='1'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/laptop-setup"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='5' width='16' height='10' rx='1'/%3E%3Cpath d='M2 19h20'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/simulator"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='13' rx='2'/%3E%3Cpath d='M8 21h8M12 17v4'/%3E%3Cpath d='M10 8l5 2.5-5 2.5z'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/coding/git-and-github"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='5' r='2'/%3E%3Ccircle cx='6' cy='19' r='2'/%3E%3Ccircle cx='18' cy='8' r='2'/%3E%3Cpath d='M6 7v10M18 10c0 4-6 3-11 7'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/glossary"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z'/%3E%3Cpath d='M4 21V5M8 7h7'/%3E%3C/svg%3E"); }
+.sidebar a[href="#/team-links"]::before { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1'/%3E%3Cpath d='M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1'/%3E%3C/svg%3E"); }
+
+/* ---------- Menu button ----------
+   On computers the menu is always open, so the button is hidden.
+   On phones there is a white top bar with the hub's name and a "Menu" button. */
+.sidebar-toggle { display: none; }
+
+@media screen and (max-width: 768px) {
+  body::before {
+    content: "Learning Hub";
+    position: fixed; top: 0; left: 0; right: 0; z-index: 25;
+    height: calc(env(safe-area-inset-top, 0px) + 58px);
+    padding-top: env(safe-area-inset-top, 0px);
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--sv-line);
+    font-family: var(--font); font-size: 18px; font-weight: 800; color: var(--sv-ink);
+  }
+  .sidebar-toggle,
+  body.close .sidebar-toggle {
+    display: flex; align-items: center; gap: 10px;
+    top: calc(env(safe-area-inset-top, 0px) + 10px); bottom: auto; left: 12px;
+    width: auto; padding: 9px 16px 9px 14px;
+    border: 0; border-radius: 999px;
+    background: var(--sv-red);
+    box-shadow: 0 2px 8px rgba(166, 0, 18, 0.3);
+    transition: none;
+  }
+  .sidebar-toggle .sidebar-toggle-button { display: inline-block; vertical-align: middle; }
+  .sidebar-toggle span { background-color: #fff; width: 18px; }
+  .sidebar-toggle span:last-child { margin-bottom: 0; }
+  .sidebar-toggle::after { content: "Menu"; color: #fff; font-family: var(--font); font-size: 16px; font-weight: 700; }
+  /* On phones, Docsify adds "close" to the page when the menu is OPEN */
+  body.close .sidebar-toggle::after { content: "Close"; }
+  body .sidebar { padding-top: calc(env(safe-area-inset-top, 0px) + 62px); box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12); }
+  /* Docsify's main area makes its own layer, which would put the button under the top bar */
+  main { z-index: auto; }
+  .sidebar-toggle { z-index: 40; }
+  /* Small cards two to a row on phones */
+  body .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  body .hub-card { padding: 10px 12px; font-size: 15px; }
+  body .hub-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hub-stat span { font-size: 25px; }
+}
+
+/* ================= Page content ================= */
+.content { padding-top: 12px; }
+.markdown-section {
+  max-width: 900px;
+  padding: 44px 36px 64px;
+  color: var(--sv-ink);
+}
+.markdown-section h1,
+.markdown-section h2,
+.markdown-section h3,
+.markdown-section h4 { font-family: var(--font); color: var(--sv-ink); font-weight: 800; letter-spacing: -0.3px; }
+.markdown-section h1 { font-size: 2.6rem; line-height: 1.1; margin-bottom: 1.2rem; }
+.markdown-section h1::after { content: ""; display: block; width: 64px; height: 5px; border-radius: 3px; background: var(--sv-red); margin-top: 16px; }
+.markdown-section h2 { font-size: 1.7rem; margin-top: 2.8rem; }
+.markdown-section h3 { font-size: 1.25rem; margin-top: 1.8rem; }
+.markdown-section h1 a, .markdown-section h2 a, .markdown-section h3 a,
+.markdown-section .anchor span { color: inherit; }
+.markdown-section p, .markdown-section li { line-height: 1.65; }
+.markdown-section strong { color: #000; }
+.markdown-section em { color: inherit; }
+
+.markdown-section a { color: var(--sv-red); font-weight: 600; }
+.markdown-section a:hover { color: var(--sv-red-dark); text-decoration: underline; }
+
+/* Note boxes: a line starting with ">" in Markdown */
+.markdown-section blockquote {
+  background: var(--sv-red-tint);
+  border-left: 0;
+  border-radius: 12px;
+  color: var(--sv-ink);
+  margin: 1.4em 0;
+  padding: 12px 20px;
+}
+.markdown-section blockquote p { color: var(--sv-ink); font-weight: 400; margin: 0.5em 0; }
+
+/* Tables */
+.markdown-section table {
+  display: table; width: 100%;
+  border-collapse: separate; border-spacing: 0;
+  border: 1px solid var(--sv-line); border-radius: 12px; overflow: hidden;
+  font-size: 16px;
+}
+.markdown-section th {
+  background: var(--sv-shade); color: var(--sv-ink);
+  font-weight: 800; text-align: left;
+  border: 0; border-bottom: 1px solid var(--sv-line);
+}
+.markdown-section td { border: 0; border-top: 1px solid var(--sv-line); vertical-align: top; }
+.markdown-section tr:first-child td { border-top: 0; }
+.markdown-section tr:nth-child(2n) { background: transparent; }
+
+/* Code */
+.markdown-section code,
+.markdown-section pre { font-family: var(--mono); }
+.markdown-section code {
+  background: var(--sv-shade); color: var(--sv-red-dark);
+  border-radius: 5px; font-size: 0.85em; padding: 2px 6px;
+  overflow-wrap: anywhere;   /* long paths and web addresses wrap on phones instead of running off the edge */
+}
+.markdown-section pre > code { overflow-wrap: normal; }
+.markdown-section pre {
+  background: #faf8f8;
+  border: 1px solid var(--sv-line);
+  border-radius: 12px;
+}
+.markdown-section pre > code { color: var(--sv-ink); background: transparent; font-size: 14.5px; padding: 1.1em 1.4em; }
+
+/* Previous / Next buttons at the bottom of each page */
+.docsify-pagination-container { border-top: 0; margin-top: 3em; gap: 12px; }
+.pagination-item { border: 1px solid var(--sv-line); border-radius: 12px; padding: 12px 18px; margin-top: 0 !important; }
+.pagination-item:hover { background: var(--sv-red-tint); }
+.pagination-item-title { color: var(--sv-red); font-weight: 800; }
+.pagination-item-label { color: var(--sv-grey); }
+
+/* Phones: keep a 16px gutter and let wide tables scroll inside themselves */
+@media (max-width: 768px) {
+  body { font-size: 17px; }
+  .markdown-section { padding: 82px 16px 48px; }  /* top space leaves room for the top bar */
+  .markdown-section h1 { font-size: 2rem; }
+  .markdown-section h2 { font-size: 1.45rem; }
+  .markdown-section table { display: block; overflow-x: auto; }
+}
+
+/* ================= Page kit: shared pieces for picture-rich pages =================
+   Use these in any page as plain HTML. Markdown inside an HTML block is not
+   formatted, so put code blocks and normal text between the blocks. */
+.hub-lead { font-size: 1.15em; line-height: 1.55; color: #2b2b30; }
+
+/* A drawing in a card. Put an <svg class="hub-svg"> inside. */
+.hub-fig { margin: 1.2em 0 1.4em; padding: 14px; border: 1px solid var(--sv-line); border-radius: 14px; background: #fff; }
+.hub-fig figcaption { font-size: 15.5px; color: var(--sv-grey); margin-top: 8px; line-height: 1.5; text-align: center; }
+.hub-svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; font-family: var(--font); }
+.hub-svg.narrow { max-width: 440px; }
+
+/* A grid of cards */
+.hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 1em 0 1.4em; }
+.hub-card { border: 1px solid var(--sv-line); border-radius: 12px; padding: 12px 14px; background: #fff; font-size: 16px; line-height: 1.45; }
+.hub-card > b:first-of-type { display: block; font-size: 17px; margin-bottom: 2px; }  /* the card's title; later bold words stay inline */
+.hub-card code { font-size: 0.9em; }
+a.hub-card { display: block; color: var(--sv-ink) !important; text-decoration: none !important; transition: box-shadow 0.15s, transform 0.15s; }
+a.hub-card:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); transform: translateY(-2px); }
+.hub-card .hub-pic { display: block; height: 86px; margin: -2px 0 8px; }
+.hub-card .hub-pic svg { width: 100%; height: 100%; }
+
+/* One-line "why" under a step or picture */
+.hub-why { border-left: 4px solid var(--sv-red); padding: 2px 0 2px 12px; color: #2b2b30; }
+.hub-why::before { content: "Why: "; font-weight: 800; color: var(--sv-red); }
+
+/* Watch out (a common bug) and good tip boxes */
+.hub-trap, .hub-tip { border-radius: 12px; padding: 12px 16px 12px 52px; margin: 1.2em 0; position: relative; line-height: 1.55; }
+.hub-trap { background: var(--sv-yellow-tint); border: 1px solid #ecd27a; }
+.hub-tip { background: var(--sv-green-tint); border: 1px solid #b9dcbb; }
+.hub-trap::before, .hub-tip::before {
+  content: ""; position: absolute; left: 16px; top: 13px; width: 24px; height: 24px; background: currentColor;
+}
+.hub-trap::before { color: #8a6d00;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l10 18H2z'/%3E%3Cpath d='M12 10v5M12 18h.01'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l10 18H2z'/%3E%3Cpath d='M12 10v5M12 18h.01'/%3E%3C/svg%3E") center/contain no-repeat; }
+.hub-tip::before { color: var(--sv-green);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z'/%3E%3C/svg%3E") center/contain no-repeat; }
+.hub-trap b:first-child, .hub-tip b:first-child { display: block; }
+
+/* Big-number tiles: <div class="hub-stats"><div class="hub-stat"><span>30 s</span>label<small>rule</small></div></div> */
+.hub-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin: 1em 0 1.4em; }
+.hub-stat { border: 1px solid var(--sv-line); border-top: 5px solid var(--sv-red); border-radius: 12px; padding: 10px 14px 12px; background: #fff; font-size: 15px; line-height: 1.4; color: #2b2b30; }
+.hub-stat span { display: block; font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: var(--sv-ink); line-height: 1.15; margin-bottom: 2px; }
+.hub-stat small { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 700; color: var(--sv-grey); }
+.hub-stat.blue { border-top-color: var(--sv-blue); }
+.hub-stat.yellow { border-top-color: var(--sv-yellow); }
+.hub-stat.green { border-top-color: var(--sv-green); }
+
+/* A rule number tag, like G407 */
+.hub-pill { display: inline-block; border-radius: 6px; padding: 1px 8px; margin-right: 6px; background: var(--sv-ink); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0.3px; vertical-align: 2px; }
+
+/* "Check yourself": tap a question to see the answer */
+.hub-quiz details { border: 1px solid var(--sv-line); border-radius: 12px; margin: 8px 0; background: #fff; }
+.hub-quiz summary { cursor: pointer; padding: 12px 16px; font-weight: 700; list-style: none; }
+.hub-quiz summary::-webkit-details-marker { display: none; }
+.hub-quiz summary::before { content: "+"; display: inline-block; width: 22px; color: var(--sv-red); font-weight: 800; }
+.hub-quiz details[open] summary::before { content: "\2212"; }
+.hub-quiz details > div { padding: 0 16px 12px 38px; color: #2b2b30; }

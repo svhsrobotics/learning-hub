@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saucon Valley Robotics Learning Hub</title>
+  <meta name="description" content="Saucon Valley Robotics Learning Hub: the BIOBUZZ game, the robot, the code and the tools, explained for every team member">
+  <!-- Docsify turns the Markdown pages in this folder into a website in the browser.
+       No build step: edit a .md file, refresh, done. GitHub Pages can serve this folder as is. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/themes/vue.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+  <!-- Our look (Panther red, Figtree font, light menu with icons) -->
+  <link rel="stylesheet" href="theme.css?v=2026-10-26b">
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <script>
+    window.$docsify = {
+      // The logo in the menu: a red tile with a honeycomb cell (BIOBUZZ), then the hub's name
+      name: '<span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"/><path d="M12 8l3.5 2v4L12 16l-3.5-2v-4z"/></svg></span><span class="brand-text"><small>Saucon Valley Robotics</small>Learning Hub</span>',
+      search: { placeholder: 'Search the hub', noData: 'No results', depth: 3 },
+      loadSidebar: true,
+      // No section lists under pages in the menu: the page names alone are easier to scan
+      subMaxLevel: 0,
+      auto2top: true,
+      // Always fetch the latest version of each page, so edits show up on refresh
+      requestHeaders: { 'cache-control': 'max-age=0' },
+      pagination: { previousText: 'Previous', nextText: 'Next', crossChapter: true }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2.10.1/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+</body>
+</html>

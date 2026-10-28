@@ -1,0 +1,14 @@
+- [BIOBUZZ 2026-27 Overview](/)
+- [Team links](team-links.md)
+- **Coding**
+  - [Java basics](coding/java-basics.md)
+  - [Your first OpMode](coding/first-opmode.md)
+  - [From laptop to robot](coding/laptop-to-robot.md)
+  - [Sample robot & code](coding/sample-robot-code.md)
+  - [Last season's code in parts](coding/one-file-to-objects.md)
+- **Your tools**
+  - [Setting up your laptop](coding/laptop-setup.md)
+  - [Try the simulator](coding/simulator.md)
+  - [Git and GitHub](coding/git-and-github.md)
+- **Look things up**
+  - [Glossary](glossary.md)
