@@ -9,7 +9,7 @@ The official pages we use all season. Links were checked in September 2026, and 
 | [Game animation (video)](https://youtu.be/sUH3z5a5S9I) | A short animated match |
 | [Field walkthrough (video)](https://youtu.be/47X9sYnPijw) | The best first look: FIRST walks through the real field |
 | [Gameplay card (PDF)](https://www.firstinspires.org/hubfs/web/program/ftc/biobuzz-gamepostcard.pdf) | The game on one page |
-| [BIOBUZZ 2026-27 Overview](/) | The whole game explained in drawings |
+| [Overview: Field and Rules](overview.md) | The whole game explained in drawings |
 
 ## Rules (the official word)
 

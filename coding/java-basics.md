@@ -161,7 +161,7 @@ This is a cut-down example. A real launcher file has more buttons, such as "is i
 
 <p class="hub-why">If the launcher's insides change (a new motor, a new way to spin up), the buttons stay the same, so nobody else's code breaks. Two pairs of students can work at once: one builds the insides, the other writes the TeleOp that presses the buttons.</p>
 
-<div class="hub-tip"><b>See it with real robot code</b><a href="#/coding/sample-robot-code">Sample robot &amp; code</a> has a pretend robot to explore, and <a href="#/coding/one-file-to-objects">Last season's code in parts</a> takes each team's TeleOp from last season apart into machines like this one.</div>
+<div class="hub-tip"><b>See it with real robot code</b><a href="#/coding/sample-robot-code">Sample robot &amp; code</a> has a pretend robot to explore, and <a href="#/coding/one-file-to-objects">Last season's code, rebuilt</a> takes each team's TeleOp from last season apart into machines like this one.</div>
 
 ## Two more traps
 

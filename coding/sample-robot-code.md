@@ -10,7 +10,7 @@
 
 <p class="hub-why">One class per part means each file is short, each part can be tested and fixed on its own, and two students can work on different parts at the same time.</p>
 
-<div class="hub-tip"><b>Then see it with real code</b><a href="#/coding/one-file-to-objects">Last season's code in parts</a> takes each team's real TeleOp from last season and splits it into parts like these.</div>
+<div class="hub-tip"><b>Then see it with real code</b><a href="#/coding/one-file-to-objects">Last season's code, rebuilt</a> takes each team's real TeleOp from last season and splits it into parts like these.</div>
 
 ## The words
 

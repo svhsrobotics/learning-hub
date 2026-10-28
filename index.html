@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
   <!-- Our look (Panther red, Figtree font, light menu with icons) -->
-  <link rel="stylesheet" href="theme.css?v=2026-10-26b">
+  <link rel="stylesheet" href="theme.css?v=2026-10-28b">
 </head>
 <body>
   <div id="app">Loading...</div>
@@ -27,7 +27,17 @@
       auto2top: true,
       // Always fetch the latest version of each page, so edits show up on refresh
       requestHeaders: { 'cache-control': 'max-age=0' },
-      pagination: { previousText: 'Previous', nextText: 'Next', crossChapter: true }
+      pagination: { previousText: 'Previous', nextText: 'Next', crossChapter: true },
+      // Latest Updates: the newest entry (the first ## heading) gets a red star, so nobody
+      // has to move the star by hand when a new update goes on top.
+      plugins: [function(hook){
+        hook.doneEach(function(){
+          var h1 = document.querySelector('#main h1');
+          if (!h1 || h1.textContent.trim() !== 'Latest Updates') return;
+          var first = document.querySelector('#main h2');
+          if (first) first.classList.add('hub-newest');
+        });
+      }]
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
