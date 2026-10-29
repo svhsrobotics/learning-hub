@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
   <!-- Our look (Panther red, Figtree font, light menu with icons) -->
-  <link rel="stylesheet" href="theme.css?v=2026-10-28e">
+  <link rel="stylesheet" href="theme.css?v=2026-10-28f">
 </head>
 <body>
   <div id="app">Loading...</div>
@@ -31,6 +31,12 @@
       // Latest Updates: the newest entry (the first ## heading) gets a red star, so nobody
       // has to move the star by hand when a new update goes on top.
       plugins: [function(hook){
+        // iPhone Safari drew the phone Menu button under the top bar. Moving the button to the
+        // top level of the page keeps it above the bar, whatever Safari does with the page area.
+        hook.ready(function(){
+          var toggle = document.querySelector('.sidebar-toggle');
+          if (toggle && toggle.parentNode !== document.body) document.body.appendChild(toggle);
+        });
         hook.doneEach(function(){
           var h1 = document.querySelector('#main h1');
           if (!h1 || h1.textContent.trim() !== 'Latest Updates') return;
@@ -39,9 +45,9 @@
         });
         // Menu: show the newest post's date next to "Latest updates" (read from the updates page)
         hook.doneEach(function(){
-          var link = document.querySelector('.sidebar-nav a[href="#/"]');
+          var link = document.querySelector('.sidebar-nav a[href="#/updates"]');
           if (!link || link.querySelector('.hub-latest-date')) return;
-          fetch(window.$docsify.homepage || 'README.md').then(function(r){ return r.text(); }).then(function(text){
+          fetch('updates.md').then(function(r){ return r.text(); }).then(function(text){
             var m = text.match(/^## ([A-Z][a-z]+) (\d{1,2}), \d{4}/m);
             if (!m || link.querySelector('.hub-latest-date')) return;
             var tag = document.createElement('span');

@@ -1,6 +1,6 @@
-- [Latest updates](/)
+- [Latest updates](updates.md)
 - [Our GitHub](https://github.com/svhsrobotics ':target=_blank')
-- [Overview: Field and Rules](overview.md)
+- [Overview: Field and Rules](/)
 - [Team links](team-links.md)
 - **Coding**
   - [Java basics](coding/java-basics.md)

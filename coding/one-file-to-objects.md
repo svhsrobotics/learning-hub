@@ -44,7 +44,7 @@ Each one takes a minute or two. Say your answer out loud before you check.
 - All three files are real code from last season's robots, used here with thanks. A real file teaches more than a made-up one.
 - The boxes show **real code**: for each team, files that compile and do what last season's TeleOp did, but they haven't been run on a robot yet. Each team's oddities are kept on purpose and marked, so you can find them (the "look closely" questions point at them). Psi's background timer and Robotica's centering loop, which could freeze or crash the program, were fixed. Treat the code as a pattern to follow, not something to copy and paste.
 - Psi saved several versions of its TeleOp last season. The map uses the newest one. Keeping one file and using Git to remember old versions is easier than keeping copies with "FINAL" in the name. See [Git and GitHub](coding/git-and-github.md).
-- Last season's AprilTag numbers (20 and 24) don't apply this season. BIOBUZZ uses tags 30 to 45. See "AprilTags on the HIVE" on the [Overview: Field and Rules](overview.md) page.
+- Last season's AprilTag numbers (20 and 24) don't apply this season. BIOBUZZ uses tags 30 to 45. See "AprilTags on the HIVE" on the [Overview: Field and Rules](/) page.
 
 ## Your turn
 Talk these over with your team. There's no single right answer.
