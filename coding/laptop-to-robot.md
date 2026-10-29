@@ -93,14 +93,3 @@ telemetry.update();   // nothing shows until you call update()
 ```
 
 In matches, the Driver Station screen is the **only** allowed place for this. FTC Dashboard and other tools that stream over Wi-Fi are banned during matches (R704.D).
-
-## Check yourself
-
-<div class="hub-quiz">
-<details><summary>Where do your new OpMode files go?</summary><div>In <code>TeamCode</code>, under <code>src/main/java/org/firstinspires/ftc/teamcode/</code>, usually in the <code>opmodes</code> folder. Never in <code>FtcRobotController</code>.</div></details>
-<details><summary>Why don't we edit FIRST's files?</summary><div>So FIRST's updates drop in cleanly. Changed files would clash with the update and cause merge conflicts.</div></details>
-<details><summary>Where does your code actually run?</summary><div>On the Control Hub, on the robot. The laptop builds and installs it; the Driver Station only picks and starts it.</div></details>
-<details><summary>You changed a number, but the robot acts the same. What did you probably forget?</summary><div>To install it: press <b>Run</b>, wait for the install to finish, then pick the OpMode again.</div></details>
-<details><summary>The code says intake_motor and the configuration says Intake_Motor. What happens?</summary><div>The OpMode stops at INIT with an error, because names must match exactly, capital letters included.</div></details>
-<details><summary>Why must nothing move when you press INIT?</summary><div>The rules say the robot must stay still after INIT at setup (G304), and drivers may press INIT during the 8 second pause, when no powered motion is allowed (G403).</div></details>
-</div>

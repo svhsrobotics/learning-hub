@@ -171,15 +171,3 @@ This is a cut-down example. A real launcher file has more buttons, such as "is i
 </div>
 
 **Good to know:** robot code uses an older Java (Java 8). Code from the internet that uses newer features, like `var x = ...`, won't build.
-
-## Check yourself
-
-Tap a question to see the answer.
-
-<div class="hub-quiz">
-<details><summary>What's the difference between int and double? What does 7 / 2 give?</summary><div><code>int</code> holds whole numbers, <code>double</code> holds decimals. <code>7 / 2</code> is two whole numbers, so Java throws the fraction away and gives <b>3</b>. Write <code>7.0 / 2</code> to get 3.5.</div></details>
-<details><summary>What's the difference between = and ==?</summary><div>One <code>=</code> puts a value in a box. Two <code>==</code> ask "are these equal?" and give true or false.</div></details>
-<details><summary>Where does a counter go: before the loop or inside it?</summary><div>Before. Anything made inside the loop is made again every time, so the counter would keep going back to 0.</div></details>
-<details><summary>In the vending machine, what are the buttons and what's the machinery?</summary><div>Buttons are the public methods anyone can call, like <code>spinUp()</code>. Machinery is the private fields only the machine itself touches, like the flywheel motor.</div></details>
-<details><summary>How do you check if a String says "blue"?</summary><div><code>alliance.equals("blue")</code>. Not <code>==</code>.</div></details>
-</div>

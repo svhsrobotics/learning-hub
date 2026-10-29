@@ -80,13 +80,9 @@ public class MyFirstTeleOp extends LinearOpMode {
 
 <figure class="hub-fig"><svg class="hub-svg narrow" viewBox="0 0 440 150" role="img" aria-label="Pushing the stick up reads minus one, pulling it down reads plus one, so the code flips the sign"><circle cx="80" cy="75" r="56" fill="#f6f4f4" stroke="#18181b" stroke-width="2"/><circle cx="80" cy="37" r="20" fill="#3a3a3f"/><path d="M80 75V45" stroke="#3a3a3f" stroke-width="6"/><path d="M146 70V30M139 38l7-8 7 8" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="80" y="146" text-anchor="middle" font-size="12" fill="#5f5f66">pushed up</text><text x="190" y="62" text-anchor="middle" font-size="13" fill="#5f5f66">FTC reads</text><text x="190" y="90" text-anchor="middle" font-size="24" font-weight="800" fill="#A60012">-1.0</text><path d="M232 78h40M264 70l8 8-8 8" fill="none" stroke="#18181b" stroke-width="2"/><text x="252" y="64" text-anchor="middle" font-size="12" font-family="monospace">-y</text><text x="350" y="62" text-anchor="middle" font-size="13" fill="#5f5f66">your code uses</text><text x="350" y="90" text-anchor="middle" font-size="24" font-weight="800" fill="#2e7d32">+1.0</text><text x="350" y="112" text-anchor="middle" font-size="12.5" font-weight="700">= forward</text></svg><figcaption>FTC gamepads report "up" as a negative number. Everyone trips on this once.</figcaption></figure>
 
-## Try it (predict first!)
+## Before you run new code
 
 <div class="hub-trap"><b>Safety first, every time you run new code</b>Put the robot on a stand so its wheels are off the floor the first time, tell people nearby, and keep a finger near STOP. New code does surprising things.</div>
-
-1. Change `HALF_SPEED` to `0.2`. **Predict** what holding A will feel like, then try it.
-2. Add a telemetry line that shows `gamepad1.left_stick_x`. Predict what it shows when you push the stick right.
-3. Make the B button go at full speed even when A is held. Which `if` has to come last? Why?
 
 <div class="hub-tip"><b>Starting from one of FIRST's samples?</b>Copy it into <code>TeamCode</code> and rename the copy (for example <code>MyNameTeleOp</code>). Then check four things or it won't work: the <code>package</code> line at the top says <code>org.firstinspires.ftc.teamcode</code> (plus a folder name if you put it in one, like <code>.opmodes</code>), the class name matches the file name, the name in <code>@TeleOp(name = "...")</code> is different from every other OpMode, and the <code>@Disabled</code> line is gone.</div>
 
@@ -122,13 +118,3 @@ robot.stopDrive();
 ```
 
 <div class="hub-trap"><b>Watch out: a loop missing one of the three</b>It's an easy mistake, and the robot can keep driving for the whole autonomous period.</div>
-
-## Check yourself
-
-<div class="hub-quiz">
-<details><summary>What are the three parts of every OpMode?</summary><div>Get ready (INIT, nothing moves), wait for START, then loop until STOP. After the loop, stop the motors.</div></details>
-<details><summary>Why is -gamepad1.left_stick_y negative?</summary><div>FTC gamepads report pushing the stick up as a negative number. The minus sign flips it so "up" means forward.</div></details>
-<details><summary>What happens if you forget telemetry.update()?</summary><div>Nothing shows on the Driver Station. The messages are only sent when you call <code>update()</code>.</div></details>
-<details><summary>Name the three things every autonomous loop checks.</summary><div><code>opModeIsActive()</code>, a timeout, and the real condition you're waiting for (like the distance to the wall).</div></details>
-<details><summary>Why is a sensor better than sleep()?</summary><div>A sleep guesses how long something takes and freezes the program while it waits. A sensor knows when you're there, and the loop keeps checking STOP the whole time.</div></details>
-</div>
