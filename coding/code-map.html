@@ -74,8 +74,14 @@ button:focus-visible,.row:focus-visible,.rl:focus-visible{outline:2px solid var(
 .brand{display:flex;flex-direction:column;gap:0;min-width:0;margin-right:auto}
 .brand h1{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:1.35rem;margin:0;line-height:1.1}
 .brand p{margin:0;color:var(--muted);font-size:.86rem}
-.back{font-size:.8rem;font-weight:700;color:var(--brand);text-decoration:none;letter-spacing:.02em}
-.back:hover{text-decoration:underline}
+/* The way back to the hub: a clear button, not a small word */
+.back{display:inline-flex;align-items:center;gap:6px;width:fit-content;margin-bottom:6px;padding:5px 12px;border:1.5px solid var(--brand);border-radius:999px;font-size:.85rem;font-weight:700;color:var(--brand);text-decoration:none}
+.back:hover{background:var(--brand);color:var(--surface)}
+/* This team's rebuilt code on GitHub, and how to open it */
+.links{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;order:2}
+.ghlink{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;background:var(--surface);border:1.5px solid var(--ink);color:var(--ink);font-weight:700;font-size:.9rem;text-decoration:none}
+.ghlink:hover{background:var(--ink);color:var(--surface)}
+.howto{font-size:.85rem;color:var(--focus);text-decoration:underline}
 .brand{border-left:4px solid var(--brand);padding-left:10px}
 .tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .tools button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.82rem}
@@ -140,8 +146,9 @@ button:focus-visible,.row:focus-visible,.rl:focus-visible{outline:2px solid var(
 .world.focus .wire:not(.on){opacity:.05}
 
 /* simple view: the big file as colored stripes, boxes with only their main methods */
-.tools .modebtn{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:700}
-.tools .modebtn:hover{opacity:.85}
+/* Switching between the simple view and all the code: the biggest button on the bar */
+.tools .modebtn{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:800;font-size:.95rem;padding:7px 16px;border-radius:8px;box-shadow:0 2px 8px var(--shadow)}
+.tools .modebtn:hover{opacity:.88}
 body.simple .legend, body.simple #fitw, body.simple #reset{display:none}
 .sfile{position:absolute;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px var(--shadow);overflow:hidden}
 .sfile-h{display:flex;flex-direction:column;gap:2px;padding:8px 14px;border-bottom:1px solid var(--line);height:44px;justify-content:center}
@@ -198,14 +205,18 @@ body.simple .legend, body.simple #fitw, body.simple #reset{display:none}
 <body>
 <div class="bar">
   <div class="brand">
-    <a class="back" href="../#/coding/one-file-to-objects">Robotics Learning Hub</a>
-    <h1>Code map: one big file to objects</h1>
+    <a class="back" href="../#/coding/one-file-to-objects">&#8592; Back to the Learning Hub</a>
+    <h1>Last season's code, rebuilt in parts</h1>
     <p id="subtitle">One team's 2025-26 TeleOp and the same code split into objects</p>
   </div>
   <div class="teams" role="group" aria-label="Pick a team" id="teams"><span>Team</span></div>
   <div class="legend" role="group" aria-label="Highlight one part of the robot" id="legend"></div>
+  <div class="links" role="group" aria-label="This team's rebuilt code">
+    <a class="ghlink" id="ghlink" href="#" target="_blank" rel="noopener">See this code on GitHub &#8599;</a>
+    <a class="howto" href="../#/coding/one-file-to-objects?id=open-the-real-code-yourself">How to open it in Android Studio</a>
+  </div>
   <div class="tools" role="group" aria-label="View">
-    <button type="button" class="modebtn" id="mode">Show every line</button>
+    <button type="button" class="modebtn" id="mode">Show all the code</button>
     <button type="button" class="z" id="zout" aria-label="Zoom out">−</button>
     <button type="button" class="z" id="zin" aria-label="Zoom in">+</button>
     <button type="button" id="fitw">Fit width</button>
@@ -231,6 +242,7 @@ TEAMS.gamma = {
   file: 'BobComp.java',
   afterLabel: 'After the split (real code: compiles, not yet run on a robot)',
   where: 'gamma branch',
+  branchUrl: 'https://github.com/svhsrobotics/24-25-ftc-competition-code/tree/gamma-in-parts/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/gamma2025modular',
   subtitle: "Gamma's 2025-26 TeleOp (BobComp.java, 321 lines) and the same code split into objects",
   leftNote: 'Every line of BobComp.java, colored by the part of the robot it controls. Labels on the left name each chunk.',
   cats: ['drive','launch','intake','aim','ctl','setup','gone'],
@@ -446,6 +458,7 @@ TEAMS.psi = {
   name: 'Psi',
   file: 'FINALTELEOPREFACTOR.java',
   where: 'Panthera-Psi-2025-26',
+  branchUrl: 'https://github.com/svhsrobotics/Panthera-Psi-2025-26-with-50-more-roadrunner/tree/psi-in-parts/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/psi2025modular',
   afterLabel: 'After the split (real code: compiles, not yet run on a robot)',
   subtitle: "Psi's 2025-26 TeleOp (FINALTELEOPREFACTOR.java) and the same code split into objects",
   leftNote: 'Every line of FINALTELEOPREFACTOR.java, colored by the part of the robot it controls. Psi already used helper objects (Toggle, Debouncer); this goes one step further.',
@@ -695,6 +708,7 @@ TEAMS.robotica = {
   name: 'Robotica',
   file: 'DecodeTestTeleOp.java',
   where: 'robotica branch',
+  branchUrl: 'https://github.com/svhsrobotics/24-25-ftc-competition-code/tree/robotica-in-parts/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/robotica2025modular',
   afterLabel: 'After the split (real code: compiles, not yet run on a robot)',
   subtitle: "Robotica's 2025-26 TeleOp (DecodeTestTeleOp.java) and the same code split into objects",
   leftNote: 'Every line of DecodeTestTeleOp.java, colored by the part of the robot it controls. Labels on the left name each chunk.',
@@ -956,7 +970,10 @@ function render(id){
   document.title = 'Code Map: ' + T.name + ' · Robotics Learning Hub';
   teamBar.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.team === id)); });
   document.body.classList.toggle('simple', MODE === 'simple');
-  modeBtn.textContent = MODE === 'simple' ? 'Show every line' : 'Back to the simple view';
+  modeBtn.textContent = MODE === 'simple' ? 'Show all the code' : 'Back to the simple view';
+  // This team's rebuilt files on GitHub (its own branch, made from last season's branch)
+  var gh = document.getElementById('ghlink');
+  if (T.branchUrl){ gh.href = T.branchUrl; gh.hidden = false; } else { gh.hidden = true; }
   // The simple view's heading already says what to click, so its hint stays hidden.
   hint.textContent = HINTS[MODE]; hint.hidden = MODE === 'simple';
 

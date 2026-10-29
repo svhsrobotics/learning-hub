@@ -14,9 +14,32 @@
 
 New to the idea of splitting code into parts? Start with [Sample robot & code](coding/sample-robot-code.md).
 
+## Open the real code yourself
+
+You can read your team's rebuilt files, all of them, top to bottom. Each team's rebuilt version is a branch on GitHub, made from that team's branch from last season. It adds only the rebuilt folder; last season's code is unchanged.
+
+| Team | Branch on GitHub | Folder to open |
+|---|---|---|
+| Gamma | [gamma-in-parts](https://github.com/svhsrobotics/24-25-ftc-competition-code/tree/gamma-in-parts) | `teamcode/gamma2025modular` |
+| Psi | [psi-in-parts](https://github.com/svhsrobotics/Panthera-Psi-2025-26-with-50-more-roadrunner/tree/psi-in-parts) | `teamcode/psi2025modular` |
+| Robotica | [robotica-in-parts](https://github.com/svhsrobotics/24-25-ftc-competition-code/tree/robotica-in-parts) | `teamcode/robotica2025modular` |
+
+**Just look:** click your team's branch, then click into the folder. GitHub shows every file in your browser, with nothing to install.
+
+**Open it in Android Studio:**
+1. **File > New > Project from Version Control**, paste your team's repo address, then **Clone**:
+   - **Gamma or Robotica:** `https://github.com/svhsrobotics/24-25-ftc-competition-code.git` (both teams' branches are in this repo)
+   - **Psi:** `https://github.com/svhsrobotics/Panthera-Psi-2025-26-with-50-more-roadrunner.git`. Psi had its own repo last season, so Psi's branch is only there, not in the shared one.
+2. **Git > Fetch**, then **Git > Branches...**, under **Remote** pick `origin/<your team>-in-parts`, then **Checkout**.
+3. If the Gradle sync complains about the Java version, set the Gradle JDK to **Java 21** (**Settings > Build, Execution, Deployment > Build Tools > Gradle**). These projects use last season's SDK 11.
+
+<p class="hub-why">A branch is a separate version of the project. Checking it out swaps the files you see without changing any other branch.</p>
+
+This is last season's code, for reading and comparing: it builds, but it has never run on a robot. Last season's repos are archived (read-only), so you can't push to them. A red X next to Gamma's or Robotica's branch on GitHub comes from last season's automatic build check, which never ran; it says nothing about this code.
+
 ## How the map works
 
-The map fills the whole window. To come back here, click **Robotics Learning Hub** at its top left, or use your browser's Back button.
+The map fills the whole window. To come back here, click **Back to the Learning Hub** at its top left. **See this code on GitHub** opens your team's rebuilt files on GitHub.
 
 **It opens in a simple view.** On the **left**, the team's whole TeleOp is one tall bar: each colored stripe is a chunk of code, colored by the part of the robot it controls. On the **right**, one box per new file, showing only its main methods. Lines join each stripe to the box its code moved to.
 
@@ -26,7 +49,7 @@ The map fills the whole window. To come back here, click **Robotics Learning Hub
 | See one chunk of the old file | Click a stripe |
 | See which stripes went into a box | Point at the box |
 | Switch teams | Click **Gamma**, **Psi** or **Robotica** at the top |
-| See every line and every method | Click **Show every line**. You can drag, zoom, rearrange the boxes and highlight one part. **Back to the simple view** returns. |
+| See every line and every method | Click **Show all the code** (the red button). You can drag, zoom, rearrange the boxes and highlight one part. **Back to the simple view** returns. |
 
 ## Try these
 Each one takes a minute or two. Say your answer out loud before you check.
