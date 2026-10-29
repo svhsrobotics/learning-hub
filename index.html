@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
   <!-- Our look (Panther red, Figtree font, light menu with icons) -->
-  <link rel="stylesheet" href="theme.css?v=2026-10-28c">
+  <link rel="stylesheet" href="theme.css?v=2026-10-28e">
 </head>
 <body>
   <div id="app">Loading...</div>
@@ -36,6 +36,19 @@
           if (!h1 || h1.textContent.trim() !== 'Latest Updates') return;
           var first = document.querySelector('#main h2');
           if (first) first.classList.add('hub-newest');
+        });
+        // Menu: show the newest post's date next to "Latest updates" (read from the updates page)
+        hook.doneEach(function(){
+          var link = document.querySelector('.sidebar-nav a[href="#/"]');
+          if (!link || link.querySelector('.hub-latest-date')) return;
+          fetch(window.$docsify.homepage || 'README.md').then(function(r){ return r.text(); }).then(function(text){
+            var m = text.match(/^## ([A-Z][a-z]+) (\d{1,2}), \d{4}/m);
+            if (!m || link.querySelector('.hub-latest-date')) return;
+            var tag = document.createElement('span');
+            tag.className = 'hub-latest-date';
+            tag.textContent = m[1].slice(0, 3) + ' ' + m[2];
+            link.appendChild(tag);
+          }).catch(function(){});
         });
       }]
     };

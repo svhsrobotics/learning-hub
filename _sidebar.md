@@ -1,4 +1,5 @@
 - [Latest updates](/)
+- [Our GitHub](https://github.com/svhsrobotics ':target=_blank')
 - [Overview: Field and Rules](overview.md)
 - [Team links](team-links.md)
 - **Coding**

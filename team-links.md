@@ -57,7 +57,7 @@ The official pages we use all season. Links were checked in September 2026, and 
 |---|---|
 | [Android Studio](https://developer.android.com/studio) | Where we write and build code |
 | [Git for Windows](https://git-scm.com/) | Saves and shares code |
-| [GitHub](https://github.com/) | Every team's code lives here, in the svhsrobotics organization |
+| [Our GitHub](https://github.com/svhsrobotics) | Every team's code lives here, in the svhsrobotics organization |
 
 ## Building and the field
 
