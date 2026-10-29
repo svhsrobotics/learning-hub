@@ -158,6 +158,14 @@ body {
   /* Docsify's main area makes its own layer, which would put the button under the top bar */
   main { z-index: auto; }
   .sidebar-toggle { z-index: 40; }
+  /* iPhone Safari: Docsify slides the menu and the whole page sideways with "transform",
+     and turns on an old iPhone scrolling setting for every element. Safari can then send taps
+     to the wrong layer, so the menu looks dimmed and won't take taps. Instead, slide only the
+     menu, by changing its "left" position, keep the page still, and turn that setting off. */
+  body .sidebar { transform: none !important; left: -310px; transition: left .25s ease-out; z-index: 30; -webkit-overflow-scrolling: auto; }
+  body.close .sidebar { left: 0; }
+  body.close .content { transform: none !important; }
+  .sidebar * { -webkit-overflow-scrolling: auto; }
   /* Small cards two to a row on phones */
   body .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   body .hub-card { padding: 10px 12px; font-size: 15px; }
