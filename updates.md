@@ -1,14 +1,18 @@
 # Latest Updates
 
 <!--
-  HOW TO ADD AN UPDATE
-  Copy the three lines below, paste them right under this comment (above the newest
-  update), and fill them in. Newest goes first. The red star moves to the newest one
-  by itself, so there's nothing else to change.
+  HOW TO ADD AN UPDATE (this note is hidden on the website)
 
-## Month Day, Year: Title
+  1. Put your update BELOW this note, above the newest update. Anything typed
+     inside this note never shows on the hub.
+  2. Start with a heading: two # signs, a space, today's date written out,
+     a colon, and a title. Example:   ## November 3, 2026: Scrimmage this Saturday
+  3. Leave one empty line, then write a few sentences: what happened or what's
+     coming, and what members should do.
 
-A few sentences: what happened or what's coming, and what members should do.
+  Write the date like the example (month name, day, comma, year). The menu
+  reads it to show the newest date, and the red star moves to the top update
+  by itself.
 -->
 
 <p class="hub-lead">News and announcements for everyone in Saucon Valley Robotics. Newest first.</p>
