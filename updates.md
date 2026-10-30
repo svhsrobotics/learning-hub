@@ -6,9 +6,8 @@
   1. Put your update BELOW this note, above the newest update. Anything typed
      inside this note never shows on the hub.
   2. Start with a heading: two # signs, a space, today's date written out,
-     a colon, and a title. Example:   ## November 3, 2026: Scrimmage this Saturday
-  3. Leave one empty line, then write a few sentences: what happened or what's
-     coming, and what members should do.
+     a colon, and a title. Example:   ## November 3, 2026: Sample Title Article
+  3. Leave one empty line, then write a few sentences: Starting now, you need to add a Pull Request, here is how or why...
 
   Write the date like the example (month name, day, comma, year). The menu
   reads it to show the newest date, and the red star moves to the top update
