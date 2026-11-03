@@ -37,7 +37,7 @@ The official pages we use all season. Links were checked in September 2026, and 
 | [AprilTag introduction](https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html) | Using a camera to aim at the HIVE |
 | [Configuring a webcam](https://ftc-docs.firstinspires.org/hardware_and_software_configuration/configuring/configuring_external_webcam/configuring-external-webcam.html) | Setting up a USB camera |
 | [FTCSIM](https://ftcsim.org/) | A free simulator in your browser for practicing (not BIOBUZZ specific) |
-| [Virtual Robot simulator](https://github.com/svhsrobotics/virtual_robot) | A free simulator with a picture of the BIOBUZZ field. How to set it up: [Try the simulator](coding/simulator.md) |
+| [Virtual Robot simulator](https://github.com/svhsrobotics/virtual_robot) | A free simulator with a picture of the BIOBUZZ field. How to set it up: [Try the Virtual Robot](coding/simulator.md) |
 | [FTC Community forum](https://ftc-community.firstinspires.org/) | Help from other teams |
 
 ## Control Hub and Driver Hub

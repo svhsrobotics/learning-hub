@@ -16,6 +16,15 @@
 
 <p class="hub-lead">News and announcements for everyone in Saucon Valley Robotics. Newest first.</p>
 
+## November 2, 2026: Game Controller Works on the Mac
+
+The Virtual Robot simulator now runs on a MacBook with a real Logitech game controller. It was tested on a student's MacBook Air.
+
+The key is one exact Java download: **Liberica Full JDK 17, x86**, from BellSoft's website. Without it, the controller won't work. The <a href="#/coding/simulator">Try the Virtual Robot</a> page has the updated steps:
+
+- <a href="#/coding/simulator?id=_2-get-the-right-java">Get the right Java</a>: the exact download for a Mac, and how to pick it in Android Studio.
+- <a href="#/coding/simulator?id=_4-set-up-the-gamepad">Set up the gamepad</a>: the one setting to change, and the switch on the back of the controller goes to **D**.
+
 ## October 28, 2026: Learning Hub Launch
 
 Welcome to the Saucon Valley Robotics Learning Hub. It's our program's reference site for the BIOBUZZ season: the game, the field and the rules, coding, and the tools you'll use. Everything here comes from the official Competition Manual and FTC's own guides.

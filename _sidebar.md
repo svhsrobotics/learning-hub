@@ -10,7 +10,7 @@
   - [Last season's code, rebuilt](coding/one-file-to-objects.md)
 - **Your tools**
   - [Setting up your laptop](coding/laptop-setup.md)
-  - [Try the simulator](coding/simulator.md)
+  - [Try the Virtual Robot](coding/simulator.md)
   - [Git and GitHub](coding/git-and-github.md)
 - **Look things up**
   - [Glossary](glossary.md)

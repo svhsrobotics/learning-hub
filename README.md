@@ -12,7 +12,7 @@ The website for all three Saucon Valley FTC teams (Gamma, Psi and Robotica): the
 | Latest updates | News for the whole program, newest first |
 | Team links | Links the teams use |
 | Coding | Java basics, your first OpMode, getting code onto the robot, sample code |
-| Your tools | Laptop setup, the simulator, Git and GitHub |
+| Your tools | Laptop setup, the Virtual Robot simulator, Git and GitHub |
 | Glossary | FTC and coding words in plain English |
 
 ## How it works

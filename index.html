@@ -27,6 +27,8 @@
       // No section lists under pages in the menu: the page names alone are easier to scan
       subMaxLevel: 0,
       auto2top: true,
+      // When a link opens a section, leave room above its heading for the phone's top bar
+      topMargin: 70,
       // Always fetch the latest version of each page, so edits show up on refresh
       requestHeaders: { 'cache-control': 'max-age=0' },
       pagination: { previousText: 'Previous', nextText: 'Next', crossChapter: true },
@@ -45,6 +47,19 @@
           var first = document.querySelector('#main h2');
           if (first) first.classList.add('hub-newest');
         });
+        // Links to a section (#/page?id=...): Docsify jumps to the section, but auto2top then
+        // scrolls back to the top. Jump to the section again once the page has settled:
+        // after a new page loads (doneEach), and for links within the same page (hashchange).
+        function jumpToSection(){
+          var m = location.hash.match(/[?&]id=([^&]+)/);
+          if (!m) return;
+          setTimeout(function(){
+            var el = document.getElementById(decodeURIComponent(m[1]));
+            if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.pageYOffset - 70);
+          }, 600); // after Docsify's own half-second scroll
+        }
+        hook.doneEach(jumpToSection);
+        window.addEventListener('hashchange', jumpToSection);
         // Menu: show the newest post's date next to "Latest updates" (read from the updates page)
         hook.doneEach(function(){
           var link = document.querySelector('.sidebar-nav a[href="#/updates"]');
