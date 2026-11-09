@@ -16,14 +16,26 @@
 
 <p class="hub-lead">News and announcements for everyone in Saucon Valley Robotics. Newest first.</p>
 
-## November 9, 2026: Two New Coding Pages
+## November 9, 2026: New Simulator Robot and Two Coding Pages
 
-Two new pages in the menu, under **Driving the robot**. Each is an interactive tour of real code:
+The Virtual Robot simulator has a new robot: the **Mecanum Odometry Bot**. It has mecanum wheels, 3 odometry pods and an intake, so you can practice driving and autonomous code on your laptop before your team's robot is ready. Any team can use it.
 
-- <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a>: how a TeleOp turns two joysticks into four mecanum wheel powers. It picks up where Your first OpMode stops.
-- <a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a>: two sample autonomous programs that drive to spots on the field, for red and blue.
+**To get it:** open the Virtual Robot project in Android Studio and click **Git > Pull**. Then pick **Mecanum Odometry Bot** in the Configuration list (steps: <a href="#/coding/simulator?id=try-the-mecanum-odometry-bot">Try the Mecanum Odometry Bot</a>). New to the simulator? Start with <a href="#/coding/simulator">Try the Virtual Robot</a>.
 
-Both run in the Virtual Robot on a new simulated robot, the **Mecanum Odometry Bot**. To get it, open the simulator project and click **Git > Pull**. The steps are in <a href="#/coding/simulator?id=try-the-mecanum-odometry-bot">Try the Mecanum Odometry Bot</a>.
+It comes with five example programs, in the `odometrybot` folder in TeamCode:
+
+- **Manual Drive:** drive with the gamepad. It's laid out like FIRST's `BasicOmniOpMode_Linear` sample.
+- **Pedro: TeleOp:** drive through Pedro Pathing, plus the intake.
+- **Pod Test:** shows each odometry pod's count next to the robot's position.
+- **Pedro: Auto Leave + Park:** Autonomous Level 1.
+- **Pedro: Auto Launch + Park:** Autonomous Level 2. It curves to a launch spot facing the HIVE, with a pretend launch.
+
+Two new pages under **Driving the robot** walk through that code step by step:
+
+- <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a>: how a TeleOp turns two joysticks into four mecanum wheel powers.
+- <a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a>: the two autonomous programs, for red and blue.
+
+**Want to use the code on your team's robot?** Everything that depends on the robot is in two files: `RobotHardware.java` (motor names) and `pedro/Constants.java` (Pedro's settings).
 
 ## November 2, 2026: Game Controller Works on the Mac
 

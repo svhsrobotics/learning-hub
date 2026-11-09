@@ -10,8 +10,8 @@
   - [Sample robot & code](coding/sample-robot-code.md)
   - [Last season's code, rebuilt](coding/one-file-to-objects.md)
 - **Driving the robot**
-  - [TeleOp: drive with the gamepad](coding/drive-explainer.html ':ignore')
-  - [Autonomous with Pedro Pathing](coding/pedro-explainer.html ':ignore')
+  - [TeleOp: drive with the gamepad](coding/drive-explainer.html ':ignore :target=_self')
+  - [Autonomous with Pedro Pathing](coding/pedro-explainer.html ':ignore :target=_self')
 - **Your tools**
   - [Setting up your laptop](coding/laptop-setup.md)
   - [Try the Virtual Robot](coding/simulator.md)
