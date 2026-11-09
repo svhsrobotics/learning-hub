@@ -3,7 +3,7 @@
 <p class="hub-lead">Drive a robot on the BIOBUZZ field on your laptop screen, with no robot needed. <b>Virtual Robot</b> is a free simulator made by FTC team 8397. It runs real FTC Java code.</p>
 
 <div class="hub-grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))">
-<div class="hub-card" style="border-top:5px solid #2e7d32"><b>Good for</b>Practicing driving code, gamepad buttons, and autonomous steps like drive, turn and stop at a wall.</div>
+<div class="hub-card" style="border-top:5px solid #2e7d32"><b>Good for</b>Practicing driving code, gamepad buttons, and autonomous steps like drive, turn and stop at a wall, and following Pedro Pathing paths with the Mecanum Odometry Bot.</div>
 <div class="hub-card" style="border-top:5px solid #A60012"><b>Not in it</b>No HIVE, no balls and no camera. For launching and aiming you still need the real robot.</div>
 </div>
 
@@ -101,6 +101,28 @@ If you clone the simulator again, the new copy has `USE_VIRTUAL_GAMEPAD = true`,
 5. Press **INIT**, then **START**, and drive.
 
 <p class="hub-why">The buttons work just like the Driver Station: pick a program, INIT, START. So practice here feels the same as on the real robot.</p>
+
+## Try the Mecanum Odometry Bot
+
+The simulator has a second robot: the **Mecanum Odometry Bot**. It has odometry pods, and its example programs drive with Pedro Pathing, a path library.
+
+1. Get the latest simulator: **Git > Pull**.
+2. Run **Main**. Configuration: **Mecanum Odometry Bot**.
+3. Pick a program from the table, then INIT and START.
+
+| Program | What it does |
+|---|---|
+| **Manual Drive** | Drive with the gamepad. The code is explained in <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a> |
+| **Pedro: TeleOp** | Drive through Pedro Pathing, with the intake on the triggers and left bumper |
+| **Pod Test** | Shows each odometry pod's count next to where the robot thinks it is |
+| **Pedro: Auto Leave + Park** | Autonomous: drives off the wall and parks |
+| **Pedro: Auto Launch + Park** | Autonomous: drives to a launch spot, pretends to launch, then parks |
+
+The code is in the simulator project, in the folder `TeamCode/src/org/firstinspires/ftc/teamcode/odometrybot`. All five programs use one shared hardware class, `RobotHardware.java`.
+
+**For the two autonomous programs,** place the robot where the code starts before you press START: left-click right next to the red (left) wall, on the line halfway up the field. Then right-click to the right of the robot so it faces the blue wall.
+
+<p class="hub-why">The code tells the robot "you are starting here". If you place it somewhere else, the robot still believes the code, so it ends up in the wrong place.</p>
 
 ## Getting updates
 

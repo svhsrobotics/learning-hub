@@ -16,6 +16,15 @@
 
 <p class="hub-lead">News and announcements for everyone in Saucon Valley Robotics. Newest first.</p>
 
+## November 9, 2026: Two New Coding Pages
+
+Two new pages in the menu, under **Driving the robot**. Each is an interactive tour of real code:
+
+- <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a>: how a TeleOp turns two joysticks into four mecanum wheel powers. It picks up where Your first OpMode stops.
+- <a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a>: two sample autonomous programs that drive to spots on the field, for red and blue.
+
+Both run in the Virtual Robot on a new simulated robot, the **Mecanum Odometry Bot**. To get it, open the simulator project and click **Git > Pull**. The steps are in <a href="#/coding/simulator?id=try-the-mecanum-odometry-bot">Try the Mecanum Odometry Bot</a>.
+
 ## November 2, 2026: Game Controller Works on the Mac
 
 The Virtual Robot simulator now runs on a MacBook with a real Logitech game controller. It was tested on a student's MacBook Air.

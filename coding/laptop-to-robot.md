@@ -31,7 +31,7 @@ Only a readme from FIRST. We don't add files of our own: your team starts by cop
 
 | You want to | Start from |
 |---|---|
-| Drive a mecanum robot with a gamepad (day one) | `BasicOmniOpMode_Linear.java` |
+| Drive a mecanum robot with a gamepad (day one) | `BasicOmniOpMode_Linear.java` (how it works: <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a>) |
 | Drive a robot with one motor per side (tank) | `RobotTeleopPOV_Linear.java` or `RobotTeleopTank_Iterative.java` |
 | See the bare skeleton of an OpMode | `BasicOpMode_Linear.java` |
 | Do something once per button press | `ConceptGamepadEdgeDetection.java` |

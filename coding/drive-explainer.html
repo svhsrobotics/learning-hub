@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TeleOp: Drive With the Gamepad · Robotics Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Manual mecanum driving: the real TeleOp loop on one side, a robot you drive with on-screen sticks on the other.
+   Built by site/drive-explainer/build.py from template.html. Edit the template, not the output. */
+:root{
+  --red:#A60012; --ink:#18181b; --grey:#5f5f66; --line:#e7e3e4; --paper:#fff; --side:#f7f5f5; --code:#faf8f8;
+  --yellow:#f6c700; --yellow-tint:#fff7d6; --blue:#1f5fd1; --blue-tint:#e9f0fc; --green:#2e7d32; --green-tint:#e8f5e9;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--side);color:var(--ink);font-family:"Figtree",system-ui,sans-serif;font-size:15px;line-height:1.45;
+  padding:12px max(16px, env(safe-area-inset-left,0px)) 40px max(16px, env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+code{font-variant-ligatures:none;font-family:"JetBrains Mono",monospace;font-size:.86em;background:var(--code);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+.bar{margin-bottom:10px}
+.brand{border-left:5px solid var(--red);padding-left:12px}
+.back{font-size:.8rem;font-weight:800;color:var(--red);text-decoration:none;letter-spacing:.04em;text-transform:uppercase}
+.back:hover{text-decoration:underline}
+h1{margin:2px 0 0;font-size:1.4rem;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.sub{margin:3px 0 0;color:var(--grey);font-size:.88rem;max-width:900px}
+
+.player{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:12px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px}
+.codecard{min-width:0}
+.chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.fname{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.95rem}
+.ctag{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--grey);border-radius:6px;padding:2px 8px}
+.code{position:relative;overflow:auto;max-height:calc(var(--ph,700px) - 80px);background:var(--code);border:1px solid var(--line);border-radius:10px;font-family:"JetBrains Mono",monospace;
+  font-size:12px;line-height:1.5;padding:6px 0;font-variant-ligatures:none}
+.ln{display:grid;grid-template-columns:32px minmax(0,1fr);white-space:pre-wrap;transition:background .25s,opacity .25s;opacity:.5;border-left:4px solid transparent}
+.ln .n{color:#a19ea0;text-align:right;padding-right:8px;user-select:none}
+.ln .t{padding-right:8px;overflow-wrap:anywhere}  /* a long line wraps; drawCode() lines the second half up under its own indent */
+.ln.hi{opacity:1;background:var(--yellow-tint);border-left-color:var(--yellow)}
+.ln.skip{opacity:.8;background:#f1eff0;border-left-color:#c9c3c5}
+.k{color:#7b3fb5;font-weight:600}.s{color:#2e7d32}.c{color:#8a8790;font-style:italic}.num{color:#b0561a}.m{color:#1f5fd1}
+.skipnote{font-size:.85rem;color:var(--grey);margin:6px 2px 0;min-height:1.2em}
+
+.right,.infoside{display:flex;flex-direction:column;gap:10px;min-width:0}
+.views{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px}
+.views .card{padding:8px}
+.vt{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);margin:2px 4px 4px}
+svg{display:block;width:100%;height:auto;font-family:"Figtree",system-ui,sans-serif}
+
+.sticks{display:flex;justify-content:space-around;align-items:center;gap:10px;flex-wrap:wrap}
+.stick{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pad{width:128px;height:128px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#f6f4f4 0 60%,#ebe7e8 61%);border:2px solid #d8d3d5;position:relative;touch-action:none;cursor:grab}
+.pad .knob{position:absolute;width:52px;height:52px;border-radius:50%;background:#2b2b2e;left:38px;top:38px;box-shadow:0 3px 8px rgba(0,0,0,.35);transition:transform .05s}
+.pad.drag{cursor:grabbing}
+.stick .lbl{font-size:.82rem;font-weight:700;color:var(--grey);text-align:center}
+.mid{display:flex;flex-direction:column;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:36px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:5px 10px;cursor:pointer;font-weight:700}
+.btn.main{background:var(--red);border-color:var(--red);color:#fff}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.dot{width:26px;height:8px;border-radius:4px;background:var(--line);border:0;cursor:pointer;padding:0}
+.dot.done{background:#d9a3aa}.dot.on{background:var(--red)}
+
+.caption h2{margin:0 0 6px;font-size:1.12rem;font-weight:800;line-height:1.2}
+.caption .stepno{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-bottom:2px}
+.caption p{margin:0 0 8px}
+.why{border-left:4px solid var(--green);background:var(--green-tint);border-radius:0 8px 8px 0;padding:6px 10px;font-size:.95rem}
+.why b{color:var(--green)}
+.tele{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:#111;color:#e8e8e8;border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.tele .ttl{display:block;color:#bbb;font-family:"Figtree",sans-serif;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.tele b{color:#9fd3ff;font-weight:600}
+
+.toc{display:flex;flex-wrap:wrap;gap:3px 14px;margin:6px 0 0;font-size:.85rem}
+.toc a{color:var(--red);font-weight:700;text-decoration:none;white-space:nowrap}
+.toc a:hover{text-decoration:underline}
+.teach h2,.player,.tabs{scroll-margin-top:12px}
+.sub a{color:inherit;font-weight:700}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.teach{max-width:980px;margin:22px auto 0}
+.teach h2{font-size:1.35rem;font-weight:800;margin:26px 0 8px;letter-spacing:-.2px}
+.teach p,.teach li{max-width:820px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:12px}
+.mini{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mini h3{margin:6px 0 4px;font-size:1.05rem}
+.mini p{margin:0;font-size:.95rem}
+.mini svg{background:var(--code);border-radius:8px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line);font-size:.95rem}
+th,td{text-align:center;padding:7px 10px;border-bottom:1px solid var(--line)}
+th{background:#f6f4f4;font-weight:800}
+td:first-child,th:first-child{text-align:left}
+.p{color:var(--green);font-weight:800}.n{color:var(--red);font-weight:800}
+.wrapt{overflow-x:auto}
+.try{counter-reset:t;list-style:none;padding:0}
+.try li{counter-increment:t;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px 10px 48px;margin-bottom:8px;position:relative}
+.try li::before{content:counter(t);position:absolute;left:12px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.try .pc{display:block;font-size:.92rem;color:var(--grey);margin-top:3px}
+details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:700}
+details p{margin:8px 0 2px}
+.next{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-left:5px solid var(--red);border-radius:12px;padding:12px 14px;text-decoration:none;color:inherit;max-width:640px}
+.next b{display:block;font-size:17px}
+
+/* Laptop and wider: three columns (code | field and wheels | sticks and step notes) so everything fits on one screen */
+@media (min-width:1100px){
+  .player{grid-template-columns:minmax(0,1.1fr) minmax(0,.8fr) minmax(290px,340px)}
+  .right{display:contents}
+  .views{grid-template-columns:minmax(0,1fr)}
+  #field{max-height:calc(var(--ph,700px) * .55 - 48px)}
+  #wheels{max-height:calc(var(--ph,700px) * .45 - 52px)}
+  .infoside{max-height:var(--ph,700px);overflow:auto}
+  .sticks{gap:8px 10px}
+  .pad{width:104px;height:104px}
+  .pad .knob{width:44px;height:44px;left:28px;top:28px}
+  .mid{order:3;flex-basis:100%;flex-direction:row;justify-content:center}
+  .stick .lbl br{display:none}
+  .stick .lbl{font-size:.78rem}
+  .caption h2{font-size:1.02rem}
+  .caption p,.why{font-size:.9rem}
+  .card{padding:10px}
+}
+@media (max-width:980px){ .player{grid-template-columns:minmax(0,1fr)} .right{order:-1} .code{max-height:360px} }
+@media (max-width:520px){ .views{grid-template-columns:minmax(0,1fr)} .pad{width:112px;height:112px} .pad .knob{left:30px;top:30px} }
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="brand">
+  <a class="back" href="../">Robotics Learning Hub</a>
+  <h1>TeleOp: Drive With the Gamepad</h1>
+  <p class="sub"><a href="../#/coding/first-opmode">Your first OpMode</a> drove forward and back. A mecanum robot can also slide sideways and turn, all at the same time.</p>
+  <nav class="toc" aria-label="On this page"><a href="#watch">Watch the code</a><a href="#steps">The four steps</a><a href="#slide">How wheels slide</a><a href="#scale">Why scale down</a><a href="#try">Try it yourself</a><a href="#questions">Questions</a><a href="#next">Next</a></nav>
+</div></div>
+
+<div class="player" id="watch">
+  <div class="card codecard">
+    <div class="chead"><span class="fname" id="fname"></span><span class="ctag">real code</span></div>
+    <div class="code" id="code" tabindex="0" aria-label="TeleOp code"></div>
+    <p class="skipnote" id="skipnote"></p>
+  </div>
+
+  <div class="right">
+    <div class="views">
+      <div class="card"><div class="vt">The field (top view)</div><svg id="field" viewBox="-4 -4 152 152" role="img" aria-label="Top view of the field with the robot"></svg></div>
+      <div class="card"><div class="vt">The 4 wheels</div><svg id="wheels" viewBox="0 0 260 200" role="img" aria-label="Robot from above with each wheel's power"></svg></div>
+    </div>
+
+    <div class="infoside">
+    <div class="card">
+      <div class="sticks">
+        <div class="stick"><div class="pad" id="padL" aria-label="Left stick: forward, back and slide"><div class="knob"></div></div><span class="lbl">Left stick:<br> drive and slide</span></div>
+        <div class="mid">
+          <button class="btn" id="prev">Back</button>
+          <button class="btn main" id="next">Next</button>
+          <button class="btn" id="reset">Reset robot</button>
+        </div>
+        <div class="stick"><div class="pad" id="padR" aria-label="Right stick: turn"><div class="knob"></div></div><span class="lbl">Right stick:<br> turn</span></div>
+      </div>
+      <div class="dots" id="dots" role="group" aria-label="Tour steps"></div>
+    </div>
+
+    <div class="card caption" id="caption" aria-live="polite"></div>
+    <div class="tele" id="tele" aria-label="Driver Station telemetry"></div>
+    </div>
+  </div>
+</div>
+
+<div class="teach">
+  <h2 id="steps">The four steps in the code</h2>
+  <div class="grid4">
+    <div class="mini"><h3>1. Read the sticks</h3><p>Three numbers from -1 to 1: drive, slide and turn.</p></div>
+    <div class="mini"><h3>2. Mix</h3><p>Combine them into 4 wheel powers, one line per wheel.</p></div>
+    <div class="mini"><h3>3. Scale down</h3><p>If any power is past 1.0, divide all four by the biggest.</p></div>
+    <div class="mini"><h3>4. Send</h3><p>Give each motor its power with <code>setPower</code>.</p></div>
+  </div>
+  <p><b>Start from FIRST's sample</b> <code>BasicOmniOpMode_Linear.java</code>, which does the same four steps. <a href="../#/coding/laptop-to-robot">From laptop to robot</a> shows where FIRST's samples are and how to copy one.</p>
+
+  <h2 id="slide">How four wheels slide sideways</h2>
+  <div class="grid2">
+    <div class="mini">
+      <svg viewBox="0 0 300 200" aria-hidden="true">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10z" fill="context-stroke"/></marker>
+        <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#2e7d32"/></marker></defs>
+        <text x="130" y="16" font-size="11" text-anchor="middle" font-weight="800" fill="#5f5f66">FRONT</text>
+        <rect x="95" y="28" width="70" height="130" rx="8" fill="#f08a24" opacity=".25" stroke="#a85a0c"/>
+        <g id="mwheels"></g>
+        <path d="M232 94h52" stroke="#2e7d32" stroke-width="5" marker-end="url(#ag)"/>
+        <text x="258" y="82" font-size="12" font-weight="800" fill="#2e7d32" text-anchor="middle">robot slides</text>
+        <text x="150" y="182" font-size="11" text-anchor="middle" fill="#5f5f66">green = rolls forward, red = rolls backward</text>
+      </svg>
+      <h3>Rollers push at an angle</h3>
+      <p>A mecanum wheel has small rollers set at 45 degrees, so it pushes diagonally, not straight. Spin diagonal pairs opposite ways, and the forward and backward pushes cancel while the sideways pushes add up.</p>
+    </div>
+    <div class="mini">
+      <div class="wrapt"><table>
+        <tr><th>Stick</th><th>left front</th><th>right front</th><th>left back</th><th>right back</th></tr>
+        <tr><td>Forward (axial)</td><td class="p">+</td><td class="p">+</td><td class="p">+</td><td class="p">+</td></tr>
+        <tr><td>Slide right (lateral)</td><td class="p">+</td><td class="n">−</td><td class="n">−</td><td class="p">+</td></tr>
+        <tr><td>Turn clockwise (yaw)</td><td class="p">+</td><td class="n">−</td><td class="p">+</td><td class="n">−</td></tr>
+      </table></div>
+      <h3>The whole pattern</h3>
+      <p>Each wheel's power is axial, plus or minus lateral, plus or minus yaw, using the signs in its column. That's all the four <code>Power =</code> lines in the code are.</p>
+    </div>
+  </div>
+
+  <h2 id="scale">Why scale down?</h2>
+  <p>Forward all the way (1) and right halfway (0.5) asks two wheels for 1.5 and two for 0.5. A motor stops at 1.0, so without scaling the wheels get 1, 0.5, 0.5, 1: the strong pair lost a third of its push but the weak pair lost nothing, and the robot drives about 18 degrees off straight instead of the 27 you asked for. Dividing all four by 1.5 gives 1, 0.33, 0.33, 1: the same balance as the sticks, just as fast as the motors allow. Step 7 of the tour shows both robots side by side.</p>
+
+  <h2 id="try">Try it in the Virtual Robot</h2>
+  <p><a href="../#/coding/simulator?id=try-the-mecanum-odometry-bot">New to the Virtual Robot? Set it up first.</a></p>
+  <ol class="try">
+    <li>Open the Virtual Robot project in Android Studio and click <b>Git &gt; Pull</b> to get the latest version. Run <b>Main</b>, pick <b>Mecanum Odometry Bot</b>, then <b>Manual Drive</b>. INIT, START, and drive with the on-screen gamepad.</li>
+    <li><b>Remove the minus sign</b> in front of <code>gamepad1.left_stick_y</code>.<span class="pc">Predict first: what happens when you push the left stick up? Put the minus sign back afterward.</span></li>
+    <li><b>Delete the scale-down block</b> (the <code>max</code> lines and the <code>if</code>).<span class="pc">Predict: push forward and turn hard at the same time. Does the robot turn as much as before? Watch the telemetry numbers.</span></li>
+    <li><b>Slow the turning down.</b> Change the yaw line to <code>gamepad1.right_stick_x * 0.5</code>.<span class="pc">Predict: what's the fastest the robot can spin now?</span></li>
+    <li><b>Move turning to the left stick.</b> Some drivers like forward and turn on one stick. Swap which stick feeds <code>lateral</code> and <code>yaw</code>.<span class="pc">Predict: which stick slides the robot now? Which way do you like better?</span></li>
+  </ol>
+
+  <h2 id="questions">Questions you might ask</h2>
+  <details><summary>I push forward and the robot slides or spins. Why?</summary>
+    <p>A motor is reversed the wrong way or plugged into the wrong port. FIRST's sample says to test one wheel at a time: get each motor on the right port first, then fix the <code>setDirection</code> lines until every wheel rolls forward when you push the left stick forward.</p></details>
+  <details><summary>Why are the left motors reversed?</summary>
+    <p>The motors on the left face the opposite way to the ones on the right. Reversing them means "positive power" rolls every wheel forward, so the mixing lines stay simple.</p></details>
+  <details><summary>Why does the robot keep its own "forward" when it turns?</summary>
+    <p>This code is robot-centric: forward means the way the robot faces. Field-centric driving uses the gyro so "up the stick" always means "away from the driver", whichever way the robot faces. That needs one more step of math, and Pedro Pathing has it built in.</p></details>
+  <details><summary>How fast does this loop run?</summary>
+    <p>Many times a second, as fast as the Control Hub gets through it. That's why nothing in a TeleOp loop should wait or <code>sleep()</code>: while it waits, the sticks aren't being read.</p></details>
+
+  
+  <h2 id="next">Next</h2>
+  <a class="next" href="pedro-explainer.html"><span><b>Autonomous With Pedro Pathing</b>Let a path library do this math for you: two sample autonomous programs, step by step.</span></a>
+  
+</div>
+
+<script>
+const DATA = {"code":["// LOOP: many times a second, until STOP.","while (opModeIsActive()) {","    // 1. READ the sticks. Pushing up gives a NEGATIVE number, so flip it.","    double axial   = -gamepad1.left_stick_y;   // forward (+) and back (-)","    double lateral =  gamepad1.left_stick_x;   // slide right (+) and left (-)","    double yaw     =  gamepad1.right_stick_x;  // turn clockwise (+) and counterclockwise (-)","","    // 2. MIX them into one power per wheel. Each wheel's rollers push at an angle,","    //    so each motion adds to some wheels and subtracts from others.","    double leftFrontPower  = axial + lateral + yaw;","    double rightFrontPower = axial - lateral - yaw;","    double leftBackPower   = axial - lateral + yaw;","    double rightBackPower  = axial + lateral - yaw;","","    // 3. SCALE DOWN if any power is over 1.0 (the most a motor can take).","    //    Dividing all 4 by the biggest keeps their balance, so the robot still goes","    //    the way the sticks say, just at the top speed it can manage.","    double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));","    max = Math.max(max, Math.abs(leftBackPower));","    max = Math.max(max, Math.abs(rightBackPower));","    if (max > 1.0) {","        leftFrontPower  /= max;","        rightFrontPower /= max;","        leftBackPower   /= max;","        rightBackPower  /= max;","    }","","    // 4. SEND the powers to the wheels.","    leftFront.setPower(leftFrontPower);","    rightFront.setPower(rightFrontPower);","    leftBack.setPower(leftBackPower);","    rightBack.setPower(rightBackPower);","","    // 5. SHOW what the code is doing on the Driver Station.","    telemetry.addData(\"Sticks\", \"axial %.2f  lateral %.2f  yaw %.2f\", axial, lateral, yaw);","    telemetry.addData(\"Front\", \"left %.2f  right %.2f\", leftFrontPower, rightFrontPower);","    telemetry.addData(\"Back\", \"left %.2f  right %.2f\", leftBackPower, rightBackPower);","    telemetry.update();","}","","// After STOP: make sure nothing keeps moving (rule G404).","leftFront.setPower(0);","rightFront.setPower(0);","leftBack.setPower(0);","rightBack.setPower(0);"],"steps":[{"title":"The loop","sticks":[0,0,0],"run":false,"code":[[1,2]],"say":"Driving is one loop that runs many times a second until STOP: <b>read</b> the sticks, <b>mix</b> them into 4 wheel powers, <b>scale down</b> if needed, <b>send</b> the powers, <b>show</b> the numbers. Then do it all again.","why":"The robot only changes what it's doing when the loop runs again. A fast loop is why the robot feels like it reacts the moment you move a stick."},{"title":"1. Read the sticks","sticks":[-1,0,0],"run":false,"code":[[3,6]],"say":"Three numbers, each from -1 to 1: <b>axial</b> (left stick up and down), <b>lateral</b> (left stick sideways) and <b>yaw</b> (right stick sideways). Here the left stick is pushed all the way up.","why":"Pushing a stick UP gives a NEGATIVE number (the gamepad counts down the screen, like a computer screen does). The minus sign flips it, so up means forward."},{"title":"2. Mix: forward","sticks":[-1,0,0],"run":true,"code":[[8,13]],"say":"Only axial is 1, so every wheel gets +1 and the robot drives straight forward.","why":"Each line is axial, plus or minus lateral, plus or minus yaw. With lateral and yaw at 0, only axial counts."},{"title":"2. Mix: slide right","sticks":[0,1,0],"run":true,"code":[[8,13]],"say":"Only lateral is 1. The front-left and back-right wheels roll forward and the other two roll backward, and the robot slides right without turning.","why":"A mecanum wheel's rollers push at an angle. When diagonal pairs spin opposite ways, the forward and backward pushes cancel and the sideways pushes add up."},{"title":"2. Mix: turn","sticks":[0,0,1],"run":true,"code":[[8,13]],"say":"Only yaw is 1. Left wheels roll forward and right wheels roll backward, so the robot spins clockwise on the spot, like a tank.","why":"This is the same as tank driving: one side forward, the other side back."},{"title":"2. Mix: two at once","sticks":[-1,0.5,0],"run":true,"code":[[8,13]],"say":"Forward all the way and right halfway. Two wheels now ask for 1.5, which is more than a motor can take.","why":"Adding the motions together is what lets a mecanum robot drive diagonally, or drive and turn at the same time."},{"title":"3. Scale down","sticks":[-1,0.5,0],"run":true,"ghost":true,"code":[[15,26]],"say":"The biggest power is 1.5, so all four are divided by 1.5. The robot drives at the angle the sticks asked for. The faded robot shows what happens <b>without</b> this step.","why":"A motor can't go past 1.0, so without scaling it just cuts 1.5 down to 1.0 and leaves the other wheels alone. The balance between the wheels changes and the robot drives too straight: here about 18 degrees off straight instead of 27."},{"title":"4. Send, 5. Show","sticks":[-1,0.5,0],"run":true,"code":[[28,32],[34,38]],"say":"<code>setPower</code> sends each wheel its number. The telemetry lines put the same numbers on the Driver Station screen (the black box on this page).","why":"Telemetry is how you see what the code is thinking. If the robot does something odd, the numbers usually show why."},{"title":"Your turn: drive it","sticks":[0,0,0],"run":true,"free":true,"code":[[3,6],[8,13],[28,32]],"say":"Drag the two sticks below (or use the keyboard: <b>W S</b> forward and back, <b>A D</b> slide, <b>arrow keys</b> turn). Watch the wheel numbers change as you drive.","why":"Try to drive a square without turning the robot, then drive in a circle while always facing the middle. Both are things a mecanum robot can do and a normal robot can't."}],"file":"ManualDrive.java","checked":"2026-11-08","speed":{"inPerSec":40,"degPerSec":210}};
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const f2 = v => (v >= 0 ? " " : "") + v.toFixed(2);
+
+/* ---------- the same math as the Java code ---------- */
+function mix(ly, lx, rx, scale) {
+  const axial = -ly, lateral = lx, yaw = rx;
+  const raw = [axial + lateral + yaw, axial - lateral - yaw, axial - lateral + yaw, axial + lateral - yaw]; // LF RF LB RB
+  const max = Math.max(...raw.map(Math.abs));
+  let out;
+  if (scale) out = max > 1 ? raw.map(p => p / max) : raw.slice();
+  else out = raw.map(p => clamp(p, -1, 1));            // what a motor does with a number past 1.0
+  return { axial, lateral, yaw, raw, out, max };
+}
+
+/* ---------- robot motion (speeds measured in the simulator) ---------- */
+const V = DATA.speed.inPerSec, W = DATA.speed.degPerSec;
+function newBot() { return { x: 72, y: 60, h: 90, vf: 0, vr: 0, vw: 0, trail: [] }; }
+let bot = newBot(), ghost = newBot();
+function step(b, p, dt) {
+  const [lf, rf, lb, rb] = p;
+  const tf = V * (lf + rf + lb + rb) / 4, tr = V * (lf - rf - lb + rb) / 4, tw = W * (lf - rf + lb - rb) / 4;
+  const k = Math.min(1, dt / 0.12);                   // the robot takes a moment to speed up
+  b.vf += (tf - b.vf) * k; b.vr += (tr - b.vr) * k; b.vw += (tw - b.vw) * k;
+  const h = b.h * Math.PI / 180;
+  b.x += (b.vf * Math.cos(h) + b.vr * Math.sin(h)) * dt;
+  b.y += (b.vf * Math.sin(h) - b.vr * Math.cos(h)) * dt;
+  b.h -= b.vw * dt;                                   // positive yaw turns clockwise
+  b.x = clamp(b.x, 9, 135); b.y = clamp(b.y, 9, 135);
+  const last = b.trail[b.trail.length - 1];
+  if (!last || Math.hypot(last[0] - b.x, last[1] - b.y) > 0.8) { b.trail.push([b.x, b.y]); if (b.trail.length > 400) b.trail.shift(); }
+}
+
+/* ---------- code panel ---------- */
+const KW = /\b(double|while|if|else|new|return|boolean|String|void|static|final|int|true|false)\b/g;
+function hl(line) {
+  let esc = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"), comment = "";
+  const ci = esc.indexOf("//");
+  if (ci >= 0) { comment = '<span class="c">' + esc.slice(ci) + "</span>"; esc = esc.slice(0, ci); }
+  esc = esc.split(/("[^"]*")/).map((p, i) => i % 2 ? '<span class="s">' + p + "</span>" :
+    p.replace(KW, '<span class="k">$1</span>').replace(/\b(\d+(\.\d+)?)\b/g, '<span class="num">$1</span>')
+     .replace(/\.([a-zA-Z_]\w*)(?=\()/g, '.<span class="m">$1</span>')).join("");
+  return esc + comment;
+}
+const scaleRange = (() => { const i = DATA.code.findIndex(l => l.includes("// 3. SCALE")); return [i + 1, i + 12]; })();
+function drawCode() {
+  $("fname").textContent = DATA.file;
+  DATA.code.forEach((line, i) => {
+    const d = document.createElement("div"); d.className = "ln"; d.dataset.n = i + 1;
+    const ind = line.match(/^ */)[0].length + 2;   // wrapped part of a long line starts 2 spaces past the line's own indent
+    d.innerHTML = '<span class="n">' + (i + 1) + '</span><span class="t" style="padding-left:' + ind + 'ch;text-indent:-' + ind + 'ch">' + (hl(line) || " ") + "</span>";
+    $("code").appendChild(d);
+  });
+}
+let lastMarked = "";
+function markCode(ranges, scaleUsed) {
+  const key = JSON.stringify(ranges) + scaleUsed;
+  if (key === lastMarked) return; lastMarked = key;
+  const on = new Set(); ranges.forEach(([a, b]) => { for (let n = a; n <= b; n++) on.add(n); });
+  let first = null;
+  $("code").querySelectorAll(".ln").forEach(d => {
+    const n = +d.dataset.n, inScale = n >= scaleRange[0] && n <= scaleRange[1];
+    const h = on.has(n) && !(inScale && !scaleUsed && !S.step.ghost);
+    d.classList.toggle("hi", h);
+    d.classList.toggle("skip", on.has(n) && inScale && !h);
+    if (on.has(n) && first === null) first = d;
+  });
+  if (first) $("code").scrollTo({ top: Math.max(0, first.offsetTop - 40), behavior: "smooth" });
+}
+
+/* ---------- field drawing ---------- */
+const X = x => x, Y = y => 144 - y;
+const G = {};
+function robotShape(g, opacity) {
+  // front = +x in its own frame; 18 x 18 in
+  const b = el("g", { opacity }, g);
+  [[-8, -9.6], [4, -9.6], [-8, 7.2], [4, 7.2]].forEach(([x, y]) => el("rect", { x, y, width: 5.2, height: 2.4, rx: .8, fill: "#2b2b2e" }, b));
+  el("rect", { x: -8.4, y: -7.4, width: 16.8, height: 14.8, rx: 2, fill: "#f08a24", stroke: "#a85a0c", "stroke-width": .6 }, b);
+  el("rect", { x: 7.4, y: -6, width: 1.8, height: 12, rx: .9, fill: "#2e7d32" }, b);
+  el("path", { d: "M-2 0h8", stroke: "#18181b", "stroke-width": 1.4, "marker-end": "url(#arr)" }, b);
+  return b;
+}
+function drawField() {
+  const svg = $("field");
+  const defs = el("defs", {}, svg);
+  const mk = el("marker", { id: "arr", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto" }, defs);
+  el("path", { d: "M0 0 10 5 0 10z", fill: "#18181b" }, mk);
+  el("rect", { x: 0, y: 0, width: 144, height: 144, fill: "#9a9a9e" }, svg);
+  for (let i = 1; i < 6; i++) {
+    el("line", { x1: i * 24, y1: 0, x2: i * 24, y2: 144, stroke: "#86868b", "stroke-width": .5 }, svg);
+    el("line", { x1: 0, y1: i * 24, x2: 144, y2: i * 24, stroke: "#86868b", "stroke-width": .5 }, svg);
+  }
+  el("rect", { x: -3, y: 0, width: 3, height: 144, fill: "#A60012" }, svg);
+  el("rect", { x: 144, y: 0, width: 3, height: 144, fill: "#1f5fd1" }, svg);
+  el("rect", { x: -3, y: -3, width: 150, height: 3, fill: "#555" }, svg);
+  el("rect", { x: -3, y: 144, width: 150, height: 3, fill: "#555" }, svg);
+  G.gtrail = el("polyline", { fill: "none", stroke: "#fff", "stroke-width": 1, "stroke-dasharray": "2 1.5", opacity: .8 }, svg);
+  G.trail = el("polyline", { fill: "none", stroke: "#2fd16b", "stroke-width": 1.2, "stroke-linejoin": "round" }, svg);
+  G.ghost = el("g", {}, svg); robotShape(G.ghost, .38);
+  G.glabel = el("text", { "font-size": 4.2, "font-weight": 800, fill: "#fff", "text-anchor": "middle", "paint-order": "stroke", stroke: "#6b6b70", "stroke-width": 1.2 }, svg, "without scaling");
+  G.bot = el("g", {}, svg); robotShape(G.bot, 1);
+}
+function place(g, b) { g.setAttribute("transform", `translate(${X(b.x)} ${Y(b.y)}) rotate(${-b.h})`); }
+const pts = t => t.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(" ");
+
+/* ---------- wheel view ---------- */
+const WH = [  // LF RF LB RB, drawn with the robot facing up
+  { n: "left front", x: 70, y: 34, d: 1 }, { n: "right front", x: 170, y: 34, d: -1 },
+  { n: "left back", x: 70, y: 124, d: -1 }, { n: "right back", x: 170, y: 124, d: 1 }];
+function drawWheels() {
+  const svg = $("wheels");
+  const defs = el("defs", {}, svg);
+  ["g", "r"].forEach(c => { const m = el("marker", { id: "w" + c, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 3.2, markerHeight: 3.2, orient: "auto" }, defs);
+    el("path", { d: "M0 0 10 5 0 10z", fill: c === "g" ? "#2e7d32" : "#A60012" }, m); });
+  el("rect", { x: 92, y: 30, width: 76, height: 140, rx: 10, fill: "#f08a24", opacity: .22, stroke: "#a85a0c" }, svg);
+  el("rect", { x: 100, y: 26, width: 60, height: 7, rx: 3.5, fill: "#2e7d32" }, svg);
+  el("text", { x: 130, y: 18, "font-size": 9, "text-anchor": "middle", "font-weight": 800, fill: "#5f5f66" }, svg, "FRONT");
+  G.wheel = WH.map(w => {
+    const g = el("g", {}, svg);
+    el("rect", { x: w.x, y: w.y, width: 20, height: 40, rx: 4, fill: "#2b2b2e" }, g);
+    for (let i = 0; i < 5; i++) {     // rollers at 45 degrees, mirrored like a real mecanum set
+      const yy = w.y + 5 + i * 7.5;
+      el("line", { x1: w.x + 3, y1: yy + (w.d > 0 ? 5 : 0), x2: w.x + 17, y2: yy + (w.d > 0 ? 0 : 5), stroke: "#8a8a90", "stroke-width": 2, "stroke-linecap": "round" }, g);
+    }
+    const arrow = el("line", { x1: w.x + 10, y1: w.y + 20, x2: w.x + 10, y2: w.y + 20, "stroke-width": 5, "stroke-linecap": "round" }, svg);
+    const tx = w.x < 130 ? w.x - 6 : w.x + 26, anchor = w.x < 130 ? "end" : "start";
+    const val = el("text", { x: tx, y: w.y + 18, "font-size": 13, "font-weight": 800, "text-anchor": anchor, "font-family": "JetBrains Mono, monospace" }, svg, "0.00");
+    const sub = el("text", { x: tx, y: w.y + 31, "font-size": 8.5, "text-anchor": anchor, fill: "#5f5f66" }, svg, w.n);
+    const raw = el("text", { x: tx, y: w.y + 41, "font-size": 8.5, "text-anchor": anchor, fill: "#A60012", "font-weight": 700 }, svg, "");
+    return { arrow, val, raw, w };
+  });
+}
+function showWheels(m) {
+  G.wheel.forEach((o, i) => {
+    const p = m.out[i], w = o.w, len = p * 26;
+    o.arrow.setAttribute("x2", w.x + 10); o.arrow.setAttribute("y2", w.y + 20 - len);
+    o.arrow.setAttribute("stroke", p >= 0 ? "#2e7d32" : "#A60012");
+    o.arrow.setAttribute("marker-end", Math.abs(p) > .04 ? (p >= 0 ? "url(#wg)" : "url(#wr)") : "");
+    o.arrow.setAttribute("opacity", Math.abs(p) > .04 ? 1 : 0);
+    o.val.textContent = p.toFixed(2); o.val.setAttribute("fill", Math.abs(p) < .005 ? "#5f5f66" : p > 0 ? "#2e7d32" : "#A60012");
+    o.raw.textContent = Math.abs(m.raw[i]) > 1.0001 ? `asked ${m.raw[i].toFixed(2)}` : "";
+  });
+}
+
+/* ---------- sticks ---------- */
+const stick = { ly: 0, lx: 0, rx: 0 }, target = { ly: 0, lx: 0, rx: 0 };
+let userDriving = false;
+const keys = new Set();
+function setupPad(id, side) {
+  const pad = $(id), knob = pad.querySelector(".knob");
+  let active = null;
+  const move = e => {
+    const r = pad.getBoundingClientRect(), R = r.width / 2;
+    let dx = (e.clientX - r.left - R) / (R * .72), dy = (e.clientY - r.top - R) / (R * .72);
+    const m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; }
+    if (side === "L") { target.lx = dx; target.ly = dy; } else { target.rx = dx; }
+  };
+  pad.addEventListener("pointerdown", e => { active = e.pointerId; pad.setPointerCapture(e.pointerId); pad.classList.add("drag"); goFree(); move(e); });
+  pad.addEventListener("pointermove", e => { if (e.pointerId === active) move(e); });
+  const end = e => { if (e.pointerId !== active) return; active = null; pad.classList.remove("drag");
+    if (side === "L") { target.lx = 0; target.ly = 0; } else target.rx = 0; };
+  pad.addEventListener("pointerup", end); pad.addEventListener("pointercancel", end);
+  return knob;
+}
+let knobL, knobR;
+function showKnobs() {
+  const R = $("padL").getBoundingClientRect().width / 2 * .72 || 46;
+  knobL.style.transform = `translate(${stick.lx * R}px, ${stick.ly * R}px)`;
+  knobR.style.transform = `translate(${stick.rx * R}px, 0px)`;
+}
+
+/* ---------- tour ---------- */
+const S = { i: 0, step: DATA.steps[0], t: 0 };
+function goFree() {
+  if (!userDriving) { userDriving = true; go(DATA.steps.length - 1, true); }
+}
+function go(i, keepBot) {
+  S.i = clamp(i, 0, DATA.steps.length - 1); S.step = DATA.steps[S.i]; S.t = 0;
+  userDriving = !!S.step.free;
+  if (!S.step.free) { [target.ly, target.lx, target.rx] = S.step.sticks; }
+  else if (!keepBot) { target.ly = target.lx = target.rx = 0; }
+  if (!keepBot) { bot = newBot(); ghost = newBot(); }
+  lastMarked = "";
+  const st = S.step;
+  $("caption").innerHTML = `<span class="stepno">Step ${S.i + 1} of ${DATA.steps.length}</span><h2>${st.title}</h2><p>${st.say}</p><div class="why"><b>Why:</b> ${st.why}</div>`;
+  $("dots").innerHTML = "";
+  DATA.steps.forEach((s, j) => { const d = document.createElement("button"); d.className = "dot" + (j === S.i ? " on" : j < S.i ? " done" : "");
+    d.title = s.title; d.setAttribute("aria-label", `Step ${j + 1}: ${s.title}`); d.onclick = () => go(j, false); $("dots").appendChild(d); });
+  $("prev").disabled = S.i === 0;
+  $("next").textContent = S.i === DATA.steps.length - 1 ? "Start over" : "Next";
+}
+
+/* ---------- main loop ---------- */
+let last = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;
+  // keyboard drives the sticks in free mode
+  if (userDriving && keys.size) {
+    target.ly = (keys.has("s") ? 1 : 0) - (keys.has("w") ? 1 : 0);
+    target.lx = (keys.has("d") ? 1 : 0) - (keys.has("a") ? 1 : 0);
+    target.rx = (keys.has("arrowright") ? 1 : 0) - (keys.has("arrowleft") ? 1 : 0);
+  }
+  // sticks glide toward their target (the tour moves them for you)
+  const k = Math.min(1, dt / 0.08);
+  for (const a of ["ly", "lx", "rx"]) stick[a] += (target[a] - stick[a]) * k;
+
+  const m = mix(stick.ly, stick.lx, stick.rx, true);
+  const st = S.step;
+  S.t += dt;
+  if (st.run) {
+    step(bot, m.out, dt);
+    if (st.ghost) step(ghost, mix(stick.ly, stick.lx, stick.rx, false).out, dt);
+    if (!st.free && S.t > 3.2) { bot = newBot(); ghost = newBot(); S.t = 0; }   // tour steps replay
+  }
+  place(G.bot, bot); G.trail.setAttribute("points", pts(bot.trail));
+  const showGhost = !!st.ghost;
+  G.ghost.setAttribute("visibility", showGhost ? "visible" : "hidden");
+  G.glabel.setAttribute("visibility", showGhost ? "visible" : "hidden");
+  G.gtrail.setAttribute("points", showGhost ? pts(ghost.trail) : "");
+  if (showGhost) { place(G.ghost, ghost); G.glabel.setAttribute("x", X(ghost.x) + 15); G.glabel.setAttribute("y", Y(ghost.y) + 2); }
+
+  showWheels(m); showKnobs();
+  const scaleUsed = m.max > 1.0001;
+  markCode(st.code.concat(st.free || st.ghost ? [] : []), scaleUsed);
+  const inScaleStep = st.code.some(([a]) => a === scaleRange[0]);
+  $("skipnote").textContent = inScaleStep || st.free
+    ? (scaleUsed ? `Scale-down is running: the biggest power was ${m.max.toFixed(2)}, so all four are divided by it.` : "Scale-down is skipped this loop: no power is over 1.0.")
+    : "";
+  $("tele").innerHTML = `<span class="ttl">Driver Station telemetry</span>Sticks  <b>axial ${f2(m.axial)}  lateral ${f2(m.lateral)}  yaw ${f2(m.yaw)}</b>\nFront   <b>left ${f2(m.out[0])}  right ${f2(m.out[1])}</b>\nBack    <b>left ${f2(m.out[2])}  right ${f2(m.out[3])}</b>`;
+  requestAnimationFrame(frame);
+}
+
+/* ---------- wire up ---------- */
+drawCode(); drawField(); drawWheels();
+knobL = setupPad("padL", "L"); knobR = setupPad("padR", "R");
+$("next").onclick = () => go(S.i === DATA.steps.length - 1 ? 0 : S.i + 1, false);
+$("prev").onclick = () => go(S.i - 1, false);
+$("reset").onclick = () => { bot = newBot(); ghost = newBot(); };
+const KEYS = ["w", "a", "s", "d", "arrowleft", "arrowright"];
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (KEYS.includes(k) && !e.target.closest("input, textarea")) { e.preventDefault(); keys.add(k); goFree(); }
+});
+document.addEventListener("keyup", e => { keys.delete(e.key.toLowerCase());
+  if (!keys.size && userDriving) { target.ly = target.lx = target.rx = 0; } });
+// mecanum diagram in the teaching section
+(function () {
+  const g = $("mwheels"); if (!g) return;
+  // left front, right front, left back, right back: x, y, roller slant, roll direction (slide right)
+  [[73, 34, 1, 1], [169, 34, -1, -1], [73, 112, -1, -1], [169, 112, 1, 1]].forEach(([x, y, d, dir]) => {
+    el("rect", { x, y, width: 18, height: 40, rx: 4, fill: "#2b2b2e" }, g);
+    for (let i = 0; i < 5; i++) { const yy = y + 5 + i * 7;
+      el("line", { x1: x + 3, y1: yy + (d > 0 ? 5 : 0), x2: x + 15, y2: yy + (d > 0 ? 0 : 5), stroke: "#8a8a90", "stroke-width": 1.8 }, g); }
+    const ax = x < 130 ? x - 12 : x + 30, col = dir > 0 ? "#2e7d32" : "#A60012";
+    el("path", { d: `M${ax} ${y + 20 + dir * 14}v${-dir * 24}`, stroke: col, "stroke-width": 4, fill: "none", "marker-end": "url(#ah)" }, g);
+  });
+})();
+go(+(new URLSearchParams(location.hash.slice(1)).get("step") || 1) - 1, false);
+// Fit the player to the screen: --ph = the screen height left below the title.
+// The code, the field, the wheels and the step notes all use it, so a laptop shows them without scrolling.
+function fitPlayer() {
+  const top = document.querySelector(".player").offsetTop;
+  const h = Math.max(380, window.innerHeight - top - 14);
+  document.documentElement.style.setProperty("--ph", h + "px");
+}
+fitPlayer();
+window.addEventListener("resize", fitPlayer);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Autonomous With Pedro Pathing · Robotics Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Pedro Pathing explainer: the real autonomous code on one side, the robot driving on the other.
+   Robot motion was recorded from the Virtual Robot simulator running this exact code.
+   Built by site/pedro-explainer/build.py from template.html. Edit the template, not the output. */
+:root{
+  --red:#A60012; --red-tint:#fbecee; --ink:#18181b; --grey:#5f5f66; --line:#e7e3e4;
+  --paper:#fff; --side:#f7f5f5; --code:#faf8f8; --yellow:#f6c700; --yellow-tint:#fff7d6;
+  --blue:#1f5fd1; --blue-tint:#e9f0fc; --green:#2e7d32; --green-tint:#e8f5e9;
+  --bot:#f08a24; --pod:#1f5fd1; --pink:#d6338a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--side);color:var(--ink);font-family:"Figtree",system-ui,sans-serif;font-size:15px;line-height:1.45;
+  padding:12px max(16px, env(safe-area-inset-left,0px)) 40px max(16px, env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+code{font-variant-ligatures:none;font-family:"JetBrains Mono",monospace;font-size:.86em;background:var(--code);border:1px solid var(--line);border-radius:5px;padding:0 4px}
+
+.bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 16px;margin-bottom:8px}
+.brand{border-left:5px solid var(--red);padding-left:12px;margin-right:auto}
+.back{font-size:.8rem;font-weight:800;color:var(--red);text-decoration:none;letter-spacing:.04em;text-transform:uppercase}
+.back:hover{text-decoration:underline}
+h1{margin:2px 0 0;font-size:1.4rem;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.sub{margin:3px 0 0;color:var(--grey);font-size:.88rem;max-width:900px}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 13px;cursor:pointer;font-weight:700;font-size:.9rem}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.alli{margin-left:auto;display:flex;gap:6px}
+.alli .pill[data-a="red"][aria-pressed="true"]{background:var(--red);border-color:var(--red)}
+.alli .pill[data-a="blue"][aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
+
+.player{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px}
+
+/* code panel */
+.codecard{display:flex;flex-direction:column;min-width:0}
+.chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.fname{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:.95rem}
+.ctag{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--grey);border-radius:6px;padding:2px 8px}
+.code{position:relative;overflow:auto;max-height:calc(var(--ph,700px) - 52px);background:var(--code);border:1px solid var(--line);border-radius:10px;
+  font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.5;padding:6px 0;font-variant-ligatures:none}
+.ln{display:grid;grid-template-columns:32px minmax(0,1fr);white-space:pre-wrap;transition:background .25s,opacity .25s;opacity:.55;border-left:4px solid transparent}
+.ln .n{color:#a19ea0;text-align:right;padding-right:8px;user-select:none}
+.ln .t{padding-right:8px;overflow-wrap:anywhere}  /* a long line wraps; drawCode() lines the second half up under its own indent */
+.ln.hi{opacity:1;background:var(--yellow-tint);border-left-color:var(--yellow)}
+.code.none .ln{opacity:1}
+.k{color:#7b3fb5;font-weight:600}.s{color:#2e7d32}.c{color:#8a8790;font-style:italic}.num{color:#b0561a}.m{color:#1f5fd1}
+
+/* field side */
+.fieldside,.infoside{display:flex;flex-direction:column;gap:10px;min-width:0}
+.fieldcard{padding:8px}
+svg.field{display:block;width:100%;height:auto;max-height:calc(var(--ph,700px) - 18px);font-family:"Figtree",system-ui,sans-serif;touch-action:manipulation}
+.tele{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 12px;font-family:"JetBrains Mono",monospace;font-size:12.5px;background:#111;color:#e8e8e8;border-radius:10px;padding:10px 12px}
+.tele b{color:#9fd3ff;font-weight:600;overflow-wrap:anywhere}
+.tele .ttl{grid-column:1/-1;color:#bbb;font-family:"Figtree",sans-serif;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.tele .msg{grid-column:1/-1;color:var(--yellow);margin-top:3px}
+
+.caption h2{margin:0 0 6px;font-size:1.12rem;font-weight:800;line-height:1.2}
+.caption .stepno{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-bottom:2px}
+.caption p{margin:0 0 8px}
+.why{border-left:4px solid var(--green);background:var(--green-tint);border-radius:0 8px 8px 0;padding:6px 10px;font-size:.95rem}
+.why b{color:var(--green)}
+.bluenote{border-left:4px solid var(--blue);background:var(--blue-tint);border-radius:0 8px 8px 0;padding:6px 10px;font-size:.92rem;margin-top:8px}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:36px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:5px 10px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:#c9c3c5}
+.btn.main{background:var(--red);border-color:var(--red);color:#fff;min-width:88px}
+.btn svg{width:16px;height:16px}
+.speed{display:flex;gap:4px;margin-left:auto;align-items:center;font-size:.85rem;color:var(--grey)}
+.speed .pill{padding:4px 10px;font-size:.82rem}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.dot{width:30px;height:8px;border-radius:4px;background:var(--line);border:0;cursor:pointer;padding:0}
+.dot.done{background:#d9a3aa}.dot.on{background:var(--red)}
+.hint{margin:6px 2px 0;font-size:.85rem;color:var(--grey);min-height:1.2em}
+.hint b{color:var(--ink)}
+
+.recnote{font-size:.8rem;color:var(--grey);margin:2px 2px 0}
+
+/* teaching sections */
+.toc{display:flex;flex-wrap:wrap;gap:3px 14px;margin:6px 0 0;font-size:.85rem}
+.toc a{color:var(--red);font-weight:700;text-decoration:none;white-space:nowrap}
+.toc a:hover{text-decoration:underline}
+.teach h2,.player,.tabs{scroll-margin-top:12px}
+.teach{max-width:980px;margin:22px auto 0}
+.teach h2{font-size:1.35rem;font-weight:800;margin:26px 0 8px;letter-spacing:-.2px}
+.teach h3{font-size:1.05rem;font-weight:800;margin:16px 0 6px}
+.teach p,.teach li{max-width:820px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.mini{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mini h3{margin:6px 0 4px}
+.mini p{margin:0;font-size:.95rem}
+.mini svg{display:block;width:100%;height:auto;background:var(--code);border-radius:8px}
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.loop .box{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 12px;font-weight:700}
+.loop .box small{display:block;font-weight:500;color:var(--grey);font-size:.82rem}
+.loop .arr{font-weight:800;color:var(--grey)}
+.trap{border-left:5px solid var(--yellow);background:var(--yellow-tint);border-radius:0 10px 10px 0;padding:8px 12px;margin:10px 0}
+.try{counter-reset:t;list-style:none;padding:0}
+.try li{counter-increment:t;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px 10px 48px;margin-bottom:8px;position:relative}
+.try li::before{content:counter(t);position:absolute;left:12px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.try .pc{display:block;font-size:.92rem;color:var(--grey);margin-top:3px}
+details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:700}
+details p{margin:8px 0 2px}
+table{border-collapse:collapse;width:100%;background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--line);font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f6f4f4;font-weight:800}
+.wrapt{overflow-x:auto}
+
+/* Laptop and wider: three columns (code | field | step notes) so everything fits on one screen */
+@media (min-width:1100px){
+  .player{grid-template-columns:minmax(0,1.15fr) minmax(0,.9fr) minmax(290px,340px)}
+  .caption h2{font-size:1.02rem}
+  .caption p,.why,.bluenote{font-size:.9rem}
+  .card{padding:10px}
+  .fieldside{display:contents}
+  .infoside{max-height:var(--ph,700px);overflow:auto}
+}
+/* In-between widths: two columns, the field shrinks so the step notes stay close */
+@media (min-width:901px) and (max-width:1099px){
+  svg.field{max-height:calc(var(--ph,700px) * .6)}
+}
+@media (max-width:900px){
+  svg.field{max-height:none}
+  .player{grid-template-columns:minmax(0,1fr)}
+  .fieldside{order:-1}
+  .code{max-height:340px}
+  .speed{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){ .ln{transition:none} }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">
+    <a class="back" href="../">Robotics Learning Hub</a>
+    <h1>Autonomous With Pedro Pathing</h1>
+    <p class="sub">Two sample autonomous programs for the first 30 seconds of a match. The robot does what the yellow lines say.</p>
+    <nav class="toc" aria-label="On this page"><a href="#watch">Watch the code</a><a href="#ideas">Big ideas</a><a href="#redblue">Red and blue</a><a href="#try">Try it yourself</a><a href="#draw">Draw your own path</a><a href="#robot">Your team's robot</a><a href="#questions">Questions</a><a href="#pretend">What's pretend</a></nav>
+  </div>
+</div>
+
+<div class="tabs" id="watch" role="group" aria-label="Choose an autonomous">
+  <span id="levelTabs" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+  <span class="alli" role="group" aria-label="Alliance">
+    <button class="pill" data-a="red" aria-pressed="true">Red</button>
+    <button class="pill" data-a="blue" aria-pressed="false">Blue</button>
+  </span>
+</div>
+
+<div class="player">
+  <div class="card codecard">
+    <div class="chead"><span class="fname" id="fname"></span><span class="ctag" id="ctag">autonomous code</span></div>
+    <div class="code" id="code" tabindex="0" aria-label="Autonomous code"></div>
+  </div>
+
+  <div class="fieldside">
+    <div class="card fieldcard">
+      <svg class="field" id="field" viewBox="-9 -4 162 166" role="img" aria-label="Top view of the field with the robot"></svg>
+    </div>
+
+    <div class="infoside">
+    <div class="card">
+      <div class="controls">
+        <button class="btn" id="prev" aria-label="Previous step"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
+        <button class="btn main" id="play"></button>
+        <button class="btn" id="next" aria-label="Next step">Next<svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="btn" id="replay" aria-label="Replay this step"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v3h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Replay</button>
+        <span class="speed" role="group" aria-label="Speed">Speed
+          <button class="pill" data-s="0.25" aria-pressed="false">¼×</button>
+          <button class="pill" data-s="0.5" aria-pressed="true">½×</button>
+          <button class="pill" data-s="1" aria-pressed="false">Real</button>
+        </span>
+      </div>
+      <div class="dots" id="dots" role="group" aria-label="Steps"></div>
+      <p class="hint" id="hint" aria-live="polite"></p>
+    </div>
+
+    <div class="card caption" id="caption" aria-live="polite"></div>
+
+    <div class="tele" id="tele" aria-label="Driver Station telemetry"></div>
+    <p class="recnote" id="recnote"></p>
+    </div>
+  </div>
+</div>
+
+<div class="teach">
+
+  <h2 id="ideas">The big ideas</h2>
+  <div class="grid2">
+    <div class="mini">
+      <svg viewBox="0 0 220 150" aria-hidden="true">
+        <rect x="30" y="10" width="130" height="130" fill="#fff" stroke="#bbb"/>
+        <rect x="26" y="10" width="4" height="130" fill="#A60012"/><rect x="160" y="10" width="4" height="130" fill="#1f5fd1"/>
+        <circle cx="30" cy="140" r="4" fill="#18181b"/>
+        <text x="8" y="148" font-size="10" font-weight="700">(0, 0)</text>
+        <path d="M30 140h60" stroke="#18181b" stroke-width="2.5" marker-end="url(#ah)"/>
+        <path d="M30 140v-60" stroke="#18181b" stroke-width="2.5" marker-end="url(#ah)"/>
+        <text x="94" y="137" font-size="11" font-weight="800">x</text><text x="35" y="78" font-size="11" font-weight="800">y</text>
+        <text x="168" y="40" font-size="10" fill="#5f5f66">blue</text><text x="168" y="52" font-size="10" fill="#5f5f66">wall</text>
+        <text x="95" y="8" font-size="9" fill="#5f5f66" text-anchor="middle">far side</text>
+        <text x="95" y="150" font-size="9" fill="#5f5f66" text-anchor="middle">audience</text>
+        <g transform="translate(110 70)"><rect x="-12" y="-12" width="24" height="24" rx="3" fill="#f08a24"/><path d="M0 0h20" stroke="#18181b" stroke-width="2.5" marker-end="url(#ah)"/></g>
+        <text x="120" y="98" font-size="9" fill="#18181b">heading 0</text>
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#18181b"/></marker></defs>
+      </svg>
+      <h3>1. A Pose is a spot</h3>
+      <p><code>p.of(x, y, heading)</code>. Inches from the red wall's audience corner, and degrees: 0 faces the blue wall, 90 faces the far side. Pedro always means the <b>center</b> of the robot.</p>
+    </div>
+    <div class="mini">
+      <svg viewBox="0 0 220 150" aria-hidden="true">
+        <path d="M20 120 L120 120" stroke="#18181b" stroke-width="3"/>
+        <circle cx="20" cy="120" r="5" fill="#18181b"/><circle cx="120" cy="120" r="5" fill="#18181b"/>
+        <text x="20" y="140" font-size="10">start</text><text x="104" y="140" font-size="10">end</text>
+        <text x="40" y="110" font-size="10" font-weight="700">line(start, end)</text>
+        <path d="M20 80 Q150 80 180 20" fill="none" stroke="#18181b" stroke-width="3"/>
+        <path d="M20 80 L150 80 L180 20" fill="none" stroke="#d6338a" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle cx="150" cy="80" r="5" fill="#d6338a"/><text x="140" y="97" font-size="10" fill="#d6338a" font-weight="700">bend</text>
+        <circle cx="20" cy="80" r="5" fill="#18181b"/><circle cx="180" cy="20" r="5" fill="#18181b"/>
+        <text x="20" y="58" font-size="10" font-weight="700">curve(start, bend, end)</text>
+      </svg>
+      <h3>2. A path connects spots</h3>
+      <p><code>line</code> drives straight. <code>curve</code> bends toward a middle point (the pink one) without driving through it, like a magnet pulling the path.</p>
+    </div>
+    <div class="mini">
+      <svg viewBox="0 0 220 150" aria-hidden="true">
+        <g font-size="10" font-weight="700">
+          <text x="10" y="18">.constant(pose)</text><text x="120" y="18">.linear(a, b)</text>
+          <text x="10" y="88">.tangent()</text><text x="112" y="88">.facingPoint(spot)</text>
+        </g>
+        <g fill="#f08a24" stroke="#18181b" stroke-width="1">
+          <rect x="14" y="30" width="16" height="16"/><rect x="44" y="30" width="16" height="16"/><rect x="74" y="30" width="16" height="16"/>
+          <rect x="124" y="30" width="16" height="16"/><rect x="154" y="30" width="16" height="16" transform="rotate(-45 162 38)"/><rect x="184" y="30" width="16" height="16" transform="rotate(-90 192 38)"/>
+          <rect x="14" y="110" width="16" height="16" transform="rotate(-30 22 118)"/><rect x="44" y="100" width="16" height="16" transform="rotate(-50 52 108)"/><rect x="74" y="94" width="16" height="16" transform="rotate(-70 82 102)"/>
+          <rect x="124" y="114" width="16" height="16" transform="rotate(-25 132 122)"/><rect x="154" y="114" width="16" height="16" transform="rotate(-50 162 122)"/><rect x="184" y="114" width="16" height="16" transform="rotate(-80 192 122)"/>
+        </g>
+        <g stroke="#18181b" stroke-width="2">
+          <path d="M22 38h12"/><path d="M52 38h12"/><path d="M82 38h12"/>
+          <path d="M132 38h12"/><path d="M162 38l8 -8"/><path d="M192 38v-12"/>
+          <path d="M22 118l10 -6"/><path d="M52 108l8 -9"/><path d="M82 102l4 -11"/>
+          <path d="M132 122l10 -5"/><path d="M162 122l7 -8"/><path d="M192 122l2 -11"/>
+        </g>
+        <circle cx="206" cy="100" r="4" fill="#A60012"/>
+      </svg>
+      <h3>3. Heading: which way it faces while driving</h3>
+      <p><code>.constant</code> never turns. <code>.linear</code> turns smoothly from one heading to another. <code>.tangent</code> faces along the path, like a car. <code>.facingPoint</code> keeps the front aimed at a spot.</p>
+    </div>
+    <div class="mini">
+      <div class="loop" aria-hidden="true">
+        <span class="box">follow(path)<small>once</small></span><span class="arr">→</span>
+        <span class="box">update()<small>every loop</small></span><span class="arr">→</span>
+        <span class="box">isBusy()?<small>false = arrived</small></span>
+      </div>
+      <h3>4. The loop that drives</h3>
+      <p><code>update()</code> reads the 3 pods, works out where the robot is, and sets the 4 wheel powers. Call it every loop, or the robot stops steering. Add a time limit so a blocked robot can't waste all of AUTO.</p>
+    </div>
+  </div>
+
+  <div class="trap"><b>Watch out: use Pedro version 3 code only.</b> Most Pedro examples online are version 2. Many names changed in version 3, so that code won't compile. Use <a href="https://pedropathing.com" target="_blank" rel="noopener">pedropathing.com</a> and this example code.</div>
+
+  <h2 id="redblue">Red and blue: one set of numbers</h2>
+  <p>The blue side of the field is the red side turned halfway around the middle. So the code writes the <b>red</b> spots only, and <code>mirrorAroundPoint(72, 72)</code> spins each one half a turn around the field center for blue: (9, 72) facing 0 becomes (135, 72) facing 180. Press <b>Blue</b> above and watch the same code drive the other side. The drive team picks the alliance during INIT: X for blue, B for red.</p>
+
+  
+
+  <h2 id="try">Try it in the Virtual Robot</h2>
+  <p><a href="../#/coding/simulator?id=try-the-mecanum-odometry-bot">New to the Virtual Robot? Set it up first.</a></p>
+  <ol class="try">
+    <li>Open the Virtual Robot project in Android Studio and click <b>Git &gt; Pull</b> to get the latest version. Run <b>Main</b>. Pick <b>Mecanum Odometry Bot</b> in the Configuration list.</li>
+    <li>Place the robot at the start: left-click right next to the red (left) wall, on the line halfway up the field, then right-click to the right of the robot so it faces the blue wall.</li>
+    <li>Pick <b>Pedro: Auto Launch + Park</b>, press INIT, then START. Watch the telemetry: it shows the same numbers as the black box on this page.</li>
+    <li><b>Change the bend.</b> Set <code>bend</code> to <code>p.of(36, 120, 0)</code>.<span class="pc">Predict first: does the curve swing toward the far side or the audience side? Then run it and check.</span></li>
+    <li><b>Change how it faces.</b> Replace <code>.facingPoint(hive)</code> with <code>.tangent()</code>.<span class="pc">Predict: which way will the robot face when it reaches the launch spot? Is that good for launching?</span></li>
+    
+    <li><b>Start in the wrong place on purpose.</b> Place the robot one tile closer to the audience, but don't change the code.<span class="pc">Predict: where does the robot park? Why? (Hint: what does Pedro believe after <code>setPose(start)</code>?)</span></li>
+  </ol>
+
+  <h2 id="draw">Draw your own path</h2>
+  <p>Pedro's own <a href="https://visualizer.pedropathing.com" target="_blank" rel="noopener">Visualizer</a> lets you draw paths on a field and press <b>Play</b> to watch the robot drive them.</p>
+  <ul>
+    <li><b>Save</b> keeps a project in your browser. <b>Save to computer</b> makes a file you can open again or share.</li>
+    <li><b>Export &gt; Java code</b> writes Pedro 3 code in the same style as this example: <code>PoseFactory.degrees()</code>, <code>line(...)</code> and <code>curve(...)</code>.</li>
+    <li>Nothing goes to the robot directly. Paste the code into an OpMode in Android Studio, then send it to the robot the usual way.</li>
+  </ul>
+
+  <h2 id="robot">Using the example on your team's robot</h2>
+  <p>Everything that depends on the robot is in two files. The autonomous programs themselves don't change.</p>
+  <ul>
+    <li><code>RobotHardware.java</code>: the motor and servo names. They must match the names in the robot's configuration on the Driver Station.</li>
+    <li><code>pedro/Constants.java</code>: Pedro's settings for the robot (motor directions, where the odometry pods sit, and the tuning numbers).</li>
+  </ul>
+
+  <h2 id="questions">Questions you might ask</h2>
+  <details><summary>Why does the robot move in inches if the motors count ticks?</summary>
+    <p>The odometry pods count ticks as they roll. Pedro's settings (in <code>Constants.java</code>) say how many inches one tick is, and where each pod sits on the robot. From that, Pedro turns ticks into a position in inches and a heading.</p></details>
+  <details><summary>What happens if I forget to call update()?</summary>
+    <p>Pedro only steers when <code>update()</code> runs. Without it, the wheels keep their last power (or never start) and the robot doesn't follow the path.</p></details>
+  <details><summary>Why not just use sleep() and timed driving?</summary>
+    <p>A timed drive goes a different distance every time the battery or the floor changes. Pedro checks the pods every loop and corrects, so the robot ends up at the same spot. And the loop can still react: check the time limit, stop when AUTO ends.</p></details>
+  <details><summary>Is the robot really this fast?</summary>
+    <p>No. These motions were recorded in the Virtual Robot simulator, which is quicker than a real robot. The path shape and the order of steps are what to learn here. Time the real robot on a real field.</p></details>
+  <details><summary>Where do the field positions come from?</summary>
+    <p>From the BIOBUZZ Competition Manual's field drawings (Section 9). Check them on a real field before trusting them to the inch.</p></details>
+
+  <h2 id="pretend">What's pretend in this example</h2>
+  <div class="trap">The launcher isn't built yet. <code>robot.launch()</code> only writes a line on the telemetry, the flying balls on this page are pretend, and the launch spot is a guess until the launcher is tested. The drive code, the paths and the telemetry are real: they come from the simulator running this code.</div>
+</div>
+
+<script>
+const DATA = {"levels":[{"id":"leave","tab":"Autonomous Level 1: Leave + Park","opmode":"Pedro: Auto Leave + Park","file":"AutoLeavePark.java","points":"LEAVE 3 + PARK 5 = 8 points","code":["    // RED poses (x, y in inches, heading in degrees). For blue, Pedro spins each one around the center.","    PoseFactory p = blue ? PoseFactory.degrees().mirrorAroundPoint(72, 72) : PoseFactory.degrees();","    Pose start = p.of(9, 72, 0);      // touching our wall (robot is 18 in wide), facing the HIVE","    Pose offWall = p.of(26, 72, 0);   // about 8 in clear of the wall","    Pose park = p.of(14, 108, 0);     // partly in our LOADING ZONE, 5 in clear of the wall","","    // Tell Pedro where the robot is starting. Pedro only knows what we tell it:","    // if the robot is really somewhere else, every path ends up in the wrong place.","    robot.follower.setPose(start);","","    // Step 1: LEAVE. Drive straight off the wall, keeping the same heading.","    drivePath(\"1 Leave the wall\", line(start, offWall).constant(start), 3.0);","","    // Step 2: PARK. Drive to the LOADING ZONE.","    drivePath(\"2 Park in the LOADING ZONE\", line(offWall, park).constant(offWall), 4.0);","","    // Done: Pedro holds the robot in place until AUTO ends (it keeps updating).","    step = \"Done: parked, holding position\";","    while (opModeIsActive()) {","        robot.follower.update();","        showStatus();","    }","}","","/**"," * Drive one path and come back when it's finished, OR when the time limit runs out,"," * OR when AUTO is stopped. The time limit means a robot that gets blocked can't use up all of AUTO."," */","void drivePath(String stepName, Path path, double timeLimitSeconds) {","    step = stepName;","    robot.follower.follow(path);","    ElapsedTime stepTimer = new ElapsedTime();","    while (opModeIsActive() && robot.follower.isBusy() && stepTimer.seconds() < timeLimitSeconds) {","        robot.follower.update();","        showStatus();","    }","    if (stepTimer.seconds() >= timeLimitSeconds) {","        telemetry.log().add(stepName + \": TIME LIMIT hit, moving on\");","    }","}"],"markers":{"start":[9,72,"start",0,15],"offWall":[26,72,"offWall",0,-4],"park":[14,108,"park",0,-12]},"paths":{"p1":{"kind":"line","pts":["start","offWall"]},"p2":{"kind":"line","pts":["offWall","park"]}},"beats":[{"title":"A Pose is a spot on the field","kind":"still","at":"start","code":[[2,2],[3,3]],"markers":["start"],"paths":[],"say":"Every spot is a <b>Pose</b>: <b>x</b> and <b>y</b> in inches, plus the <b>heading</b> (the way the robot faces) in degrees. (0, 0) is the corner where the red wall meets the audience side. The robot starts at x 9, y 72: touching the red wall, halfway up the field, facing the HIVE (heading 0 = facing the blue wall).","why":"Why 9? The robot is 18 in wide, so when its back touches the wall, its center is 9 in from the wall. Pedro always tracks the center of the robot."},{"title":"Plan the other spots","kind":"still","at":"start","code":[[4,4],[5,5]],"markers":["start","offWall","park"],"paths":[],"say":"Two more Poses: <b>offWall</b>, 17 in straight out from the start, and <b>park</b>, partly inside the alliance's LOADING ZONE.","why":"These two spots are the points: off the wall at the end of AUTO = LEAVE (3 points), partly in the LOADING ZONE = PARK (5 points)."},{"title":"Tell Pedro where the robot is","kind":"still","at":"start","code":[[7,9]],"markers":["start","offWall","park"],"paths":[],"say":"<code>setPose(start)</code> tells Pedro the robot is at the start spot. From here on, Pedro works out where the robot is by counting how far the 3 odometry pods have rolled.","why":"Pedro can't see the field. If the robot is really 2 in to the left of where you told Pedro, every path ends 2 in to the left. Place the robot carefully."},{"title":"Step 1: drive a straight line","kind":"move","steps":["1 Leave the wall"],"code":[[11,12]],"markers":["start","offWall","park"],"paths":["p1"],"active":"p1","say":"<code>line(start, offWall)</code> makes a straight path. <code>.constant(start)</code> keeps the heading the same the whole way. <code>drivePath</code> hands the path to Pedro and waits until the robot gets there, with a 3 second limit.","why":"Watch the telemetry box: these are the numbers the Driver Station shows while the code runs."},{"title":"How drivePath waits","kind":"still","at":"after:1 Leave the wall","code":[[29,40]],"markers":["start","offWall","park"],"paths":["p1"],"say":"<code>follow(path)</code> gives Pedro the path. Then the loop calls <code>update()</code> over and over. Each <code>update()</code> reads the pods, works out where the robot is, and sets the 4 wheel powers to steer it back onto the path. <code>isBusy()</code> turns false when the robot arrives.","why":"The time limit matters: if another robot blocks yours, isBusy() stays true forever and the robot would sit there for the rest of AUTO."},{"title":"Step 2: drive to PARK","kind":"move","steps":["2 Park in the LOADING ZONE"],"code":[[14,15]],"markers":["start","offWall","park"],"paths":["p1","p2"],"active":"p2","say":"A second straight line, from offWall to park. The robot slides sideways and forward at the same time, without turning, because <code>.constant</code> keeps its heading at 0.","why":"Mecanum wheels can drive in any direction without turning first. Pedro works out the right power for each wheel."},{"title":"Done: Pedro holds the spot","kind":"hold","steps":["Done: parked, holding position"],"code":[[17,22]],"markers":["start","offWall","park"],"paths":["p1","p2"],"say":"Parked. The loop keeps calling <code>update()</code> until AUTO ends, so Pedro holds the robot on the spot. If another robot bumps it, Pedro pushes back.","why":"In the simulator this whole autonomous takes about 2.5 seconds of the 30. A real robot is slower, so test the timing on the real field."}],"rec":{"red":[[0.0,9.0,72.0,0.0,0.0,0.0,0.0,"Waiting for START"],[0.06,9.0,72.0,0.0,9.0,72.0,0.0,"Waiting for START"],[0.11,9.0,72.0,0.0,9.0,72.0,0.0,"1 Leave the wall"],[0.16,9.75,72.0,0.0,9.39,72.0,360.0,"1 Leave the wall"],[0.21,10.72,72.0,0.0,10.19,72.0,0.0,"1 Leave the wall"],[0.26,12.64,72.0,0.0,11.94,72.0,0.0,"1 Leave the wall"],[0.31,14.14,72.0,0.0,13.37,72.0,0.0,"1 Leave the wall"],[0.37,16.62,72.0,0.0,16.62,72.0,0.0,"1 Leave the wall"],[0.42,18.08,72.0,0.0,18.08,72.0,0.0,"1 Leave the wall"],[0.47,20.51,72.0,0.0,20.51,72.0,0.0,"1 Leave the wall"],[0.52,22.31,72.01,0.0,21.82,72.0,0.0,"1 Leave the wall"],[0.57,23.23,72.01,0.0,23.23,72.0,0.0,"1 Leave the wall"],[0.62,24.64,72.01,0.0,24.26,72.0,0.0,"1 Leave the wall"],[0.67,25.18,72.01,0.0,24.94,72.0,0.0,"1 Leave the wall"],[0.72,25.64,72.01,0.0,25.52,72.0,0.0,"1 Leave the wall"],[0.77,25.83,72.01,0.0,25.83,72.0,0.0,"1 Leave the wall"],[0.83,26.07,72.01,0.0,26.07,72.0,0.0,"1 Leave the wall"],[0.88,26.16,72.01,0.0,26.16,72.0,0.0,"1 Leave the wall"],[0.93,26.21,72.01,0.0,26.18,72.0,0.0,"2 Park in the LOADING ZONE"],[0.98,26.19,72.12,0.0,26.19,72.11,0.0,"2 Park in the LOADING ZONE"],[1.03,25.95,72.93,0.0,26.06,72.59,0.0,"2 Park in the LOADING ZONE"],[1.08,25.5,74.22,0.0,25.67,73.74,0.0,"2 Park in the LOADING ZONE"],[1.13,25.11,75.26,0.0,25.11,75.25,0.0,"2 Park in the LOADING ZONE"],[1.18,24.47,77.01,0.0,24.47,77.0,0.0,"2 Park in the LOADING ZONE"],[1.23,24.0,78.27,0.0,24.01,78.27,0.0,"2 Park in the LOADING ZONE"],[1.28,23.28,80.26,0.0,23.53,79.58,0.0,"2 Park in the LOADING ZONE"],[1.34,22.79,81.63,0.0,22.79,81.63,0.0,"2 Park in the LOADING ZONE"],[1.39,22.04,83.74,0.0,22.29,83.03,0.0,"2 Park in the LOADING ZONE"],[1.44,21.53,85.18,0.0,21.54,85.17,0.0,"2 Park in the LOADING ZONE"],[1.49,20.77,87.35,0.0,21.03,86.61,0.0,"2 Park in the LOADING ZONE"],[1.54,20.02,89.55,0.0,20.27,88.81,0.0,"2 Park in the LOADING ZONE"],[1.59,19.52,91.02,0.0,19.77,90.28,0.0,"2 Park in the LOADING ZONE"],[1.64,18.76,93.25,0.0,18.77,93.24,0.0,"2 Park in the LOADING ZONE"],[1.69,18.27,94.74,0.0,18.27,94.73,0.0,"2 Park in the LOADING ZONE"],[1.74,17.52,96.98,0.0,17.53,96.97,0.0,"2 Park in the LOADING ZONE"],[1.79,17.02,98.47,0.0,17.03,98.46,0.0,"2 Park in the LOADING ZONE"],[1.84,16.27,100.71,0.0,16.53,99.96,0.0,"2 Park in the LOADING ZONE"],[1.9,15.77,102.21,0.0,15.78,102.2,0.0,"2 Park in the LOADING ZONE"],[1.95,15.05,104.34,0.0,15.28,103.7,0.0,"2 Park in the LOADING ZONE"],[2.0,14.72,105.34,0.0,14.72,105.34,0.0,"2 Park in the LOADING ZONE"],[2.05,14.39,106.32,0.0,14.49,106.05,0.0,"2 Park in the LOADING ZONE"],[2.1,14.2,106.89,0.0,14.26,106.74,0.0,"2 Park in the LOADING ZONE"],[2.15,14.1,107.21,0.0,14.11,107.21,0.0,"2 Park in the LOADING ZONE"],[2.2,13.84,108.03,0.0,13.93,107.76,0.0,"2 Park in the LOADING ZONE"],[2.25,13.73,108.38,0.0,13.74,108.37,0.0,"2 Park in the LOADING ZONE"],[2.3,13.68,108.59,0.0,13.7,108.54,0.0,"2 Park in the LOADING ZONE"],[2.35,13.68,108.61,0.0,13.69,108.6,0.0,"Done: parked, holding position"],[2.4,13.71,108.55,0.0,13.71,108.58,0.0,"Done: parked, holding position"],[2.45,13.75,108.5,0.0,13.76,108.49,0.0,"Done: parked, holding position"],[2.5,13.8,108.4,0.0,13.79,108.43,0.0,"Done: parked, holding position"],[2.55,13.83,108.34,0.0,13.82,108.36,360.0,"Done: parked, holding position"],[2.61,13.88,108.25,0.0,13.88,108.25,0.0,"Done: parked, holding position"],[2.66,13.9,108.21,0.0,13.91,108.21,0.0,"Done: parked, holding position"],[2.71,13.93,108.16,0.0,13.94,108.16,0.0,"Done: parked, holding position"],[2.76,13.95,108.12,0.0,13.95,108.13,0.0,"Done: parked, holding position"],[2.81,13.96,108.1,0.0,13.96,108.11,0.0,"Done: parked, holding position"],[2.86,13.97,108.07,0.0,13.98,108.07,0.0,"Done: parked, holding position"],[2.91,13.97,108.06,0.0,13.98,108.06,0.0,"Done: parked, holding position"],[2.96,13.98,108.04,0.0,13.99,108.04,360.0,"Done: parked, holding position"],[3.01,13.98,108.04,0.0,13.99,108.03,0.0,"Done: parked, holding position"],[3.06,13.99,108.03,0.0,13.99,108.03,0.0,"Done: parked, holding position"],[3.12,13.99,108.03,0.0,14.0,108.02,0.0,"Done: parked, holding position"],[3.17,13.99,108.02,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.22,13.99,108.02,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.27,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.32,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.37,13.99,108.01,0.0,14.0,108.01,360.0,"Done: parked, holding position"],[3.42,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.47,13.99,108.01,0.0,14.0,108.01,360.0,"Done: parked, holding position"],[3.52,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.57,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[3.63,13.99,108.01,0.0,14.0,108.0,360.0,"Done: parked, holding position"],[3.68,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.73,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[3.78,13.99,108.01,0.0,14.0,108.01,360.0,"Done: parked, holding position"],[3.83,13.99,108.01,0.0,14.0,108.0,360.0,"Done: parked, holding position"]],"blue":[[0.0,135.0,72.0,180.0,0.0,0.0,0.0,"Waiting for START"],[0.06,135.0,72.0,180.0,135.0,72.0,180.0,"1 Leave the wall"],[0.11,134.25,72.0,180.0,134.61,72.0,180.0,"1 Leave the wall"],[0.16,132.7,72.0,180.0,133.28,72.0,180.0,"1 Leave the wall"],[0.21,131.36,72.0,180.0,131.36,72.01,180.0,"1 Leave the wall"],[0.26,129.05,72.0,180.0,129.86,72.01,180.0,"1 Leave the wall"],[0.31,127.37,72.0,180.0,127.37,72.01,180.0,"1 Leave the wall"],[0.36,124.71,72.0,180.0,125.61,72.01,180.0,"1 Leave the wall"],[0.41,123.29,72.0,180.0,123.29,72.0,180.0,"1 Leave the wall"],[0.47,121.46,72.0,180.0,122.12,72.0,180.0,"1 Leave the wall"],[0.52,120.42,72.0,180.0,120.89,72.0,180.0,"1 Leave the wall"],[0.57,119.49,72.0,180.0,119.49,72.01,180.0,"1 Leave the wall"],[0.62,118.83,72.0,180.0,119.12,72.01,180.0,"1 Leave the wall"],[0.67,118.14,72.0,180.0,118.14,72.0,180.0,"1 Leave the wall"],[0.72,117.44,72.0,180.0,117.66,72.0,180.0,"1 Leave the wall"],[0.77,117.16,71.99,180.0,117.27,72.0,180.0,"1 Leave the wall"],[0.82,117.02,71.99,180.0,117.04,72.0,180.0,"1 Leave the wall"],[0.87,117.05,71.99,180.0,117.02,72.0,180.0,"2 Park in the LOADING ZONE"],[0.92,117.31,71.59,180.0,117.31,71.59,180.0,"2 Park in the LOADING ZONE"],[0.98,117.64,71.01,180.0,117.64,71.02,180.0,"2 Park in the LOADING ZONE"],[1.03,118.23,69.75,180.0,118.23,69.75,180.0,"2 Park in the LOADING ZONE"],[1.08,118.91,68.16,180.0,118.68,68.72,180.0,"2 Park in the LOADING ZONE"],[1.13,119.39,66.98,180.0,119.39,66.99,180.0,"2 Park in the LOADING ZONE"],[1.18,120.14,65.08,180.0,119.88,65.74,180.0,"2 Park in the LOADING ZONE"],[1.23,120.64,63.75,180.0,120.64,63.75,180.0,"2 Park in the LOADING ZONE"],[1.28,121.4,61.68,180.0,121.15,62.38,180.0,"2 Park in the LOADING ZONE"],[1.33,121.91,60.27,180.0,121.65,60.99,180.0,"2 Park in the LOADING ZONE"],[1.39,122.68,58.12,180.0,122.42,58.85,180.0,"2 Park in the LOADING ZONE"],[1.44,123.19,56.67,180.0,122.93,57.4,180.0,"2 Park in the LOADING ZONE"],[1.49,123.95,54.47,180.0,123.94,54.48,180.0,"2 Park in the LOADING ZONE"],[1.54,124.7,52.26,180.0,124.45,53.0,180.0,"2 Park in the LOADING ZONE"],[1.59,125.21,50.77,180.0,125.2,50.78,180.0,"2 Park in the LOADING ZONE"],[1.64,125.96,48.55,180.0,125.71,49.3,180.0,"2 Park in the LOADING ZONE"],[1.69,126.47,47.06,180.0,126.46,47.07,180.0,"2 Park in the LOADING ZONE"],[1.74,127.22,44.82,180.0,126.96,45.57,180.0,"2 Park in the LOADING ZONE"],[1.79,127.73,43.33,180.0,127.72,43.33,180.0,"2 Park in the LOADING ZONE"],[1.84,128.48,41.09,180.0,128.22,41.84,180.0,"2 Park in the LOADING ZONE"],[1.9,128.94,39.7,180.0,128.94,39.7,180.0,"2 Park in the LOADING ZONE"],[1.95,129.4,38.33,180.0,129.27,38.72,180.0,"2 Park in the LOADING ZONE"],[2.0,129.68,37.51,180.0,129.59,37.75,180.0,"2 Park in the LOADING ZONE"],[2.05,129.8,37.15,180.0,129.78,37.15,180.0,"2 Park in the LOADING ZONE"],[2.1,129.93,36.72,180.0,129.86,36.91,180.0,"2 Park in the LOADING ZONE"],[2.15,130.04,36.36,180.0,130.03,36.36,180.0,"2 Park in the LOADING ZONE"],[2.2,130.13,36.03,180.0,130.1,36.11,180.0,"2 Park in the LOADING ZONE"],[2.25,130.16,35.92,180.0,130.14,35.97,180.0,"Done: parked, holding position"],[2.3,130.16,35.86,180.0,130.16,35.87,180.0,"Done: parked, holding position"],[2.35,130.16,35.85,180.0,130.15,35.86,180.0,"Done: parked, holding position"],[2.4,130.13,35.87,180.0,130.13,35.86,180.0,"Done: parked, holding position"],[2.45,130.12,35.88,180.0,130.11,35.89,180.0,"Done: parked, holding position"],[2.5,130.09,35.91,180.0,130.09,35.9,180.0,"Done: parked, holding position"],[2.56,130.07,35.92,180.0,130.06,35.93,180.0,"Done: parked, holding position"],[2.61,130.05,35.94,180.0,130.05,35.94,180.0,"Done: parked, holding position"],[2.66,130.04,35.96,180.0,130.03,35.95,180.0,"Done: parked, holding position"],[2.71,130.03,35.97,180.0,130.02,35.97,180.0,"Done: parked, holding position"],[2.76,130.02,35.97,180.0,130.02,35.98,180.0,"Done: parked, holding position"],[2.81,130.02,35.98,180.0,130.01,35.98,180.0,"Done: parked, holding position"],[2.86,130.02,35.98,180.0,130.01,35.98,180.0,"Done: parked, holding position"],[2.91,130.01,35.98,180.0,130.01,35.99,180.0,"Done: parked, holding position"],[2.97,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.02,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.07,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.12,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.17,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.22,130.01,35.99,180.0,130.0,35.99,180.0,"Done: parked, holding position"],[3.27,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.32,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.37,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.42,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.47,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.52,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.58,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.63,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.68,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[3.73,130.01,36.0,180.0,130.0,36.0,180.0,"Done: parked, holding position"]]},"lib":"Pedro Pathing"},{"id":"launch","tab":"Autonomous Level 2: Launch + Park","opmode":"Pedro: Auto Launch + Park","file":"AutoLaunchPark.java","points":"LEAVE 3 + PARK 5 + every POLLEN that lands in the HIVE","code":["    // RED poses (x, y in inches, heading in degrees). For blue, Pedro spins each one around the center.","    PoseFactory p = blue ? PoseFactory.degrees().mirrorAroundPoint(72, 72) : PoseFactory.degrees();","    Pose start      = p.of(9, 72, 0);    // touching our wall (robot is 18 in wide), facing the HIVE","    Pose bend       = p.of(36, 72, 0);   // the curve bends toward this point (the robot never drives through it)","    Pose launchSpot = p.of(32, 96, 0);   // where we launch from: a GUESS until the launcher is tested","    Pose hive       = p.of(59, 72, 0);   // middle of OUR HIVE: the point the robot turns to face","    Pose park       = p.of(14, 108, 0);  // partly in our LOADING ZONE, 5 in clear of the wall","","    // Tell Pedro where the robot is starting. Pedro only knows what we tell it.","    robot.follower.setPose(start);","","    // Step 1: drive a curve to the launch spot, turning to face the HIVE the whole way.","    // Spin the launcher up now so it's at full speed when we arrive (saves AUTO time).","    robot.launcherSpinUp();","    drivePath(\"1 Curve to the launch spot, facing the HIVE\",","            curve(start, bend, launchSpot).facingPoint(hive), 4.0);","","    // Step 2: launch. The path is finished, so Pedro holds the robot still at its end point","    // (if another robot bumps us, Pedro pushes back to the spot).","    step = \"2 Launch 4 POLLEN\";","    robot.launch(4);","    ElapsedTime launchTimer = new ElapsedTime();","    while (opModeIsActive() && launchTimer.seconds() < LAUNCH_SECONDS) {","        robot.follower.update();   // keep calling update(), or Pedro stops holding","        showStatus();","    }","    robot.launcherStop();","","    // Step 3: drive straight to PARK. Start the path from where the robot REALLY is","    // (follower.pose()), not where we planned it to be. Turn smoothly back to heading 0 on the way.","    Pose here = robot.follower.pose();","    drivePath(\"3 Park in the LOADING ZONE\", line(here, park).linear(here, park), 4.0);","","    // Done: Pedro holds the robot in place until AUTO ends.","    step = \"Done: parked, holding position\";","    while (opModeIsActive()) {","        robot.follower.update();","        showStatus();","    }","}","","/**"," * Drive one path and come back when it's finished, OR when the time limit runs out,"," * OR when AUTO is stopped. The time limit means a robot that gets blocked can't use up all of AUTO."," */","void drivePath(String stepName, Path path, double timeLimitSeconds) {","    step = stepName;","    robot.follower.follow(path);","    ElapsedTime stepTimer = new ElapsedTime();","    while (opModeIsActive() && robot.follower.isBusy() && stepTimer.seconds() < timeLimitSeconds) {","        robot.follower.update();","        showStatus();","    }","    if (stepTimer.seconds() >= timeLimitSeconds) {","        telemetry.log().add(stepName + \": TIME LIMIT hit, moving on\");","    }","}"],"markers":{"start":[9,72,"start",0,15],"bend":[36,72,"bend",0,7],"launchSpot":[32,96,"launchSpot",14,1.5],"hive":[59,72,"hive",0,9],"park":[14,108,"park",0,-12]},"paths":{"p1":{"kind":"curve","pts":["start","bend","launchSpot"]},"p2":{"kind":"line","pts":["launchSpot","park"]}},"beats":[{"title":"Start and park: same as Autonomous Level 1","kind":"still","at":"start","code":[[2,2],[3,3],[7,7]],"markers":["start","park"],"paths":[],"say":"Same start and park spots as Autonomous Level 1. This time the robot also launches its 4 pre-loaded POLLEN into the alliance's HIVE on the way.","why":"Rule G304: every robot starts touching exactly 4 POLLEN. Launching them in AUTO is free points before TELEOP even starts."},{"title":"Three new spots","kind":"still","at":"start","code":[[4,4],[5,5],[6,6]],"markers":["start","bend","launchSpot","hive","park"],"paths":[],"say":"<b>bend</b>: the curve bends toward this point but never drives through it. <b>launchSpot</b>: where the robot stops to launch. <b>hive</b>: the middle of the alliance's HIVE, a point to <i>face</i>, not to drive to.","why":"The launch spot is a guess. Once the launcher is built, the team tests where it scores best and changes this one line."},{"title":"Tell Pedro where the robot is","kind":"still","at":"start","code":[[9,10]],"markers":["start","bend","launchSpot","hive","park"],"paths":[],"say":"Exactly like Autonomous Level 1: <code>setPose(start)</code>, so Pedro knows where the robot begins.","why":"Every autonomous starts this way. Forget it, and Pedro thinks the robot starts at (0, 0), in the corner."},{"title":"Step 1: a curve that faces the HIVE","kind":"move","steps":["1 Curve to the launch spot, facing the HIVE"],"code":[[12,16]],"markers":["start","bend","launchSpot","hive","park"],"paths":["p1"],"active":"p1","aim":true,"say":"<code>curve(start, bend, launchSpot)</code> makes a smooth curve. <code>.facingPoint(hive)</code> turns the robot as it drives, so its front points at the HIVE the whole way and it arrives already aimed. The launcher spins up while the robot drives.","why":"Spinning up while driving saves time: the launcher is at full speed the moment the robot stops."},{"title":"Step 2: stand still and launch","kind":"launch","steps":["2 Launch 4 POLLEN"],"code":[[18,27]],"markers":["start","bend","launchSpot","hive","park"],"paths":["p1"],"aim":true,"say":"The path is finished, so Pedro holds the robot still at the launch spot while it launches for 2 seconds. The loop keeps calling <code>update()</code>, or Pedro stops holding.","why":"The launcher isn't built yet: robot.launch() only writes a line on the telemetry, and the flying balls here are pretend. When it's built, the timer becomes \"until the launcher is empty\"."},{"title":"Step 3: park, starting from where the robot really is","kind":"move","steps":["3 Park in the LOADING ZONE"],"code":[[29,32]],"markers":["start","bend","launchSpot","hive","park"],"paths":["p1","p2"],"active":"p2","say":"<code>follower.pose()</code> is where Pedro thinks the robot is right now. Starting the path there means no jump if the robot stopped an inch off. <code>.linear(here, park)</code> turns the robot smoothly from facing the HIVE back to heading 0 while it drives.","why":"Planned spots and real spots are never exactly the same. Starting from the real one keeps the next path smooth."},{"title":"Done: Pedro holds the spot","kind":"hold","steps":["Done: parked, holding position"],"code":[[34,39]],"markers":["start","bend","launchSpot","hive","park"],"paths":["p1","p2"],"say":"Parked and holding until AUTO ends.","why":"In the simulator the whole thing takes about 5 seconds, including 2 seconds of launching. A real robot is slower, so test the timing on the real field."}],"rec":{"red":[[0.0,9.0,72.0,0.0,0.0,0.0,0.0,"Waiting for START"],[0.06,9.0,72.0,0.0,9.0,72.0,0.0,"1 Curve to the launch spot, facing the HIVE"],[0.11,9.39,72.0,0.0,9.39,72.0,360.0,"1 Curve to the launch spot, facing the HIVE"],[0.16,10.69,72.03,-0.0,10.19,72.01,360.0,"1 Curve to the launch spot, facing the HIVE"],[0.22,11.86,72.09,-0.1,11.86,72.08,359.9,"1 Curve to the launch spot, facing the HIVE"],[0.27,13.83,72.28,-0.3,13.15,72.19,359.8,"1 Curve to the launch spot, facing the HIVE"],[0.32,15.22,72.48,-0.7,15.22,72.48,359.3,"1 Curve to the launch spot, facing the HIVE"],[0.37,17.29,72.92,-1.4,16.6,72.75,358.9,"1 Curve to the launch spot, facing the HIVE"],[0.42,19.23,73.5,-2.6,18.65,73.28,358.0,"1 Curve to the launch spot, facing the HIVE"],[0.47,20.4,73.97,-3.5,20.4,73.97,356.4,"1 Curve to the launch spot, facing the HIVE"],[0.52,22.17,74.75,-4.4,21.59,74.48,355.9,"1 Curve to the launch spot, facing the HIVE"],[0.57,23.32,75.32,-5.4,23.32,75.31,354.6,"1 Curve to the launch spot, facing the HIVE"],[0.62,24.94,76.26,-7.2,24.42,75.93,353.5,"1 Curve to the launch spot, facing the HIVE"],[0.67,25.95,76.95,-8.6,25.95,76.95,351.4,"1 Curve to the launch spot, facing the HIVE"],[0.73,27.32,78.1,-11.1,26.88,77.69,349.8,"1 Curve to the launch spot, facing the HIVE"],[0.78,28.16,78.94,-12.8,28.16,78.93,347.1,"1 Curve to the launch spot, facing the HIVE"],[0.83,29.21,80.26,-16.4,29.21,80.25,343.6,"1 Curve to the launch spot, facing the HIVE"],[0.88,29.84,81.27,-18.3,29.85,81.26,341.7,"1 Curve to the launch spot, facing the HIVE"],[0.93,30.69,82.94,-21.4,30.69,82.93,338.6,"1 Curve to the launch spot, facing the HIVE"],[0.98,31.33,84.64,-24.9,31.14,84.06,336.2,"1 Curve to the launch spot, facing the HIVE"],[1.03,31.65,85.78,-27.1,31.65,85.77,332.9,"1 Curve to the launch spot, facing the HIVE"],[1.08,31.97,87.49,-30.1,31.88,86.91,330.9,"1 Curve to the launch spot, facing the HIVE"],[1.13,32.09,88.63,-32.0,32.04,88.05,328.9,"1 Curve to the launch spot, facing the HIVE"],[1.18,32.17,90.33,-34.5,32.18,90.32,325.5,"1 Curve to the launch spot, facing the HIVE"],[1.24,32.18,91.37,-36.1,32.18,91.36,323.9,"1 Curve to the launch spot, facing the HIVE"],[1.29,32.12,92.86,-38.1,32.15,92.33,322.5,"1 Curve to the launch spot, facing the HIVE"],[1.34,32.04,93.84,-39.2,32.05,93.83,320.8,"1 Curve to the launch spot, facing the HIVE"],[1.39,31.97,94.77,-40.4,32.0,94.51,319.9,"1 Curve to the launch spot, facing the HIVE"],[1.44,31.93,95.32,-41.0,31.95,95.15,319.1,"1 Curve to the launch spot, facing the HIVE"],[1.49,31.91,95.62,-41.3,31.93,95.48,318.8,"1 Curve to the launch spot, facing the HIVE"],[1.54,31.9,95.88,-41.5,31.91,95.8,318.5,"1 Curve to the launch spot, facing the HIVE"],[1.59,31.89,95.97,-41.5,31.9,95.92,318.5,"2 Launch 4 POLLEN"],[1.64,31.9,96.01,-41.6,31.9,96.0,318.4,"2 Launch 4 POLLEN"],[1.69,31.9,96.02,-41.6,31.91,96.01,318.4,"2 Launch 4 POLLEN"],[1.75,31.91,96.02,-41.6,31.92,96.01,318.4,"2 Launch 4 POLLEN"],[1.8,31.93,96.02,-41.6,31.93,96.01,318.4,"2 Launch 4 POLLEN"],[1.85,31.94,96.01,-41.6,31.95,96.0,318.4,"2 Launch 4 POLLEN"],[1.9,31.95,96.01,-41.6,31.96,96.0,318.3,"2 Launch 4 POLLEN"],[1.95,31.97,96.01,-41.6,31.97,96.0,318.4,"2 Launch 4 POLLEN"],[2.0,31.97,96.01,-41.6,31.98,96.0,318.4,"2 Launch 4 POLLEN"],[2.05,31.98,96.01,-41.6,31.98,96.0,318.4,"2 Launch 4 POLLEN"],[2.1,31.98,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.16,31.98,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.21,31.98,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.26,31.98,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.31,31.99,96.01,-41.6,31.99,96.0,318.3,"2 Launch 4 POLLEN"],[2.36,31.99,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.41,31.99,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.46,31.99,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.51,31.99,96.01,-41.6,31.99,96.0,318.4,"2 Launch 4 POLLEN"],[2.56,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[2.61,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[2.66,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[2.71,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[2.77,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[2.82,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[2.87,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[2.92,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[2.97,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.02,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.07,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.12,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.17,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.23,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[3.28,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.33,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[3.38,31.99,96.01,-41.6,32.0,96.0,318.3,"2 Launch 4 POLLEN"],[3.43,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.48,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.53,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.58,31.99,96.01,-41.6,32.0,96.0,318.4,"2 Launch 4 POLLEN"],[3.63,31.99,96.01,-41.6,32.0,96.0,318.4,"3 Park in the LOADING ZONE"],[3.69,31.45,96.37,-41.5,31.71,96.19,318.4,"3 Park in the LOADING ZONE"],[3.74,30.8,96.8,-40.4,30.8,96.79,319.5,"3 Park in the LOADING ZONE"],[3.79,29.61,97.59,-37.6,30.04,97.31,321.3,"3 Park in the LOADING ZONE"],[3.84,28.72,98.18,-35.3,29.18,97.87,323.5,"3 Park in the LOADING ZONE"],[3.89,27.27,99.12,-31.5,27.28,99.12,328.5,"3 Park in the LOADING ZONE"],[3.94,26.39,99.71,-27.2,26.4,99.7,332.7,"3 Park in the LOADING ZONE"],[3.99,24.89,100.71,-24.4,24.9,100.7,335.6,"3 Park in the LOADING ZONE"],[4.04,23.37,101.73,-20.9,23.88,101.39,337.8,"3 Park in the LOADING ZONE"],[4.09,22.38,102.41,-18.4,22.88,102.07,340.4,"3 Park in the LOADING ZONE"],[4.14,20.9,103.42,-14.8,21.4,103.07,344.0,"3 Park in the LOADING ZONE"],[4.19,19.93,104.08,-12.6,20.42,103.75,346.3,"3 Park in the LOADING ZONE"],[4.24,18.48,105.07,-9.2,18.97,104.74,349.7,"3 Park in the LOADING ZONE"],[4.29,17.53,105.72,-7.0,17.54,105.71,352.9,"3 Park in the LOADING ZONE"],[4.34,16.05,106.71,-5.2,16.06,106.7,354.8,"3 Park in the LOADING ZONE"],[4.39,15.29,107.19,-4.3,15.3,107.19,355.7,"3 Park in the LOADING ZONE"],[4.44,14.62,107.62,-2.2,14.81,107.51,357.2,"3 Park in the LOADING ZONE"],[4.5,14.37,107.78,-1.4,14.38,107.77,358.6,"3 Park in the LOADING ZONE"],[4.55,14.1,107.93,-0.6,14.2,107.88,359.1,"3 Park in the LOADING ZONE"],[4.6,13.98,108.0,-0.4,13.99,108.0,359.6,"3 Park in the LOADING ZONE"],[4.65,13.89,108.05,-0.2,13.92,108.04,359.7,"3 Park in the LOADING ZONE"],[4.7,13.87,108.07,-0.1,13.88,108.06,359.9,"Done: parked, holding position"],[4.75,13.87,108.07,-0.0,13.88,108.07,359.9,"Done: parked, holding position"],[4.8,13.88,108.06,-0.0,13.9,108.06,360.0,"Done: parked, holding position"],[4.85,13.9,108.06,-0.0,13.91,108.05,360.0,"Done: parked, holding position"],[4.9,13.92,108.05,0.0,13.93,108.05,360.0,"Done: parked, holding position"],[4.95,13.94,108.04,0.0,13.95,108.03,0.0,"Done: parked, holding position"],[5.0,13.96,108.03,0.0,13.96,108.03,0.0,"Done: parked, holding position"],[5.05,13.97,108.02,0.0,13.98,108.02,0.0,"Done: parked, holding position"],[5.11,13.98,108.02,0.0,13.98,108.02,0.0,"Done: parked, holding position"],[5.16,13.98,108.01,0.0,13.99,108.01,0.0,"Done: parked, holding position"],[5.21,13.98,108.01,0.0,13.99,108.01,0.0,"Done: parked, holding position"],[5.26,13.99,108.01,0.0,14.0,108.01,0.0,"Done: parked, holding position"],[5.31,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.36,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.41,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.46,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.51,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.56,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.61,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.66,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.71,13.99,108.0,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.76,13.99,108.01,0.0,14.0,108.0,360.0,"Done: parked, holding position"],[5.82,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.87,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.92,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[5.97,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[6.02,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[6.07,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[6.12,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"],[6.17,13.99,108.01,0.0,14.0,108.0,0.0,"Done: parked, holding position"]],"blue":[[0.0,135.0,72.0,180.0,0.0,0.0,0.0,"Waiting for START"],[0.06,135.0,72.0,180.0,0.0,0.0,0.0,"Waiting for START"],[0.11,135.0,72.0,180.0,135.0,72.0,180.0,"1 Curve to the launch spot, facing the HIVE"],[0.16,134.61,72.0,180.0,134.86,72.0,180.0,"1 Curve to the launch spot, facing the HIVE"],[0.21,133.81,71.99,180.0,134.25,72.0,180.0,"1 Curve to the launch spot, facing the HIVE"],[0.26,132.16,71.9,179.8,132.16,71.91,179.8,"1 Curve to the launch spot, facing the HIVE"],[0.31,130.23,71.68,179.5,130.9,71.77,179.6,"1 Curve to the launch spot, facing the HIVE"],[0.36,128.85,71.46,179.3,128.85,71.47,179.3,"1 Curve to the launch spot, facing the HIVE"],[0.42,126.78,71.03,178.6,127.47,71.19,178.8,"1 Curve to the launch spot, facing the HIVE"],[0.47,125.43,70.66,178.0,125.43,70.66,177.9,"1 Curve to the launch spot, facing the HIVE"],[0.52,123.47,70.0,176.8,124.11,70.24,177.2,"1 Curve to the launch spot, facing the HIVE"],[0.57,122.23,69.49,175.9,122.23,69.49,175.9,"1 Curve to the launch spot, facing the HIVE"],[0.62,120.47,68.63,174.5,121.05,68.94,175.0,"1 Curve to the launch spot, facing the HIVE"],[0.67,118.92,67.66,172.2,119.37,68.0,173.3,"1 Curve to the launch spot, facing the HIVE"],[0.72,118.01,66.94,170.6,118.01,66.95,170.6,"1 Curve to the launch spot, facing the HIVE"],[0.77,116.68,65.77,168.7,117.11,66.18,169.4,"1 Curve to the launch spot, facing the HIVE"],[0.82,115.86,64.93,166.9,115.86,64.94,166.9,"1 Curve to the launch spot, facing the HIVE"],[0.88,114.74,63.55,164.0,115.09,64.04,165.0,"1 Curve to the launch spot, facing the HIVE"],[0.93,114.06,62.52,161.8,114.39,63.06,162.9,"1 Curve to the launch spot, facing the HIVE"],[0.98,113.2,60.86,158.4,113.46,61.43,159.5,"1 Curve to the launch spot, facing the HIVE"],[1.03,112.76,59.73,155.9,112.97,60.31,157.1,"1 Curve to the launch spot, facing the HIVE"],[1.08,112.28,58.05,152.4,112.28,58.06,152.4,"1 Curve to the launch spot, facing the HIVE"],[1.13,112.03,56.38,150.2,112.1,56.96,150.2,"1 Curve to the launch spot, facing the HIVE"],[1.18,111.93,55.25,147.8,111.92,55.26,147.7,"1 Curve to the launch spot, facing the HIVE"],[1.23,111.86,53.54,145.3,111.87,54.12,146.0,"1 Curve to the launch spot, facing the HIVE"],[1.28,111.87,52.4,143.7,111.86,52.98,144.5,"1 Curve to the launch spot, facing the HIVE"],[1.34,111.95,50.76,141.5,111.92,51.26,142.2,"1 Curve to the launch spot, facing the HIVE"],[1.39,111.99,50.0,140.3,111.99,50.01,140.3,"1 Curve to the launch spot, facing the HIVE"],[1.44,112.04,49.24,139.6,112.03,49.25,139.6,"1 Curve to the launch spot, facing the HIVE"],[1.49,112.1,48.63,139.2,112.1,48.64,139.2,"1 Curve to the launch spot, facing the HIVE"],[1.54,112.18,47.91,138.8,112.15,48.12,138.9,"1 Curve to the launch spot, facing the HIVE"],[1.59,112.2,47.65,138.6,112.2,47.66,138.6,"1 Curve to the launch spot, facing the HIVE"],[1.64,112.21,47.49,138.5,112.2,47.58,138.5,"2 Launch 4 POLLEN"],[1.69,112.19,47.49,138.4,112.19,47.49,138.4,"2 Launch 4 POLLEN"],[1.74,112.17,47.53,138.4,112.17,47.51,138.4,"2 Launch 4 POLLEN"],[1.79,112.13,47.6,138.4,112.14,47.59,138.4,"2 Launch 4 POLLEN"],[1.84,112.11,47.66,138.4,112.11,47.64,138.4,"2 Launch 4 POLLEN"],[1.9,112.08,47.74,138.4,112.07,47.75,138.4,"2 Launch 4 POLLEN"],[1.95,112.06,47.78,138.4,112.06,47.79,138.4,"2 Launch 4 POLLEN"],[2.0,112.04,47.84,138.4,112.04,47.83,138.4,"2 Launch 4 POLLEN"],[2.05,112.03,47.87,138.4,112.02,47.88,138.3,"2 Launch 4 POLLEN"],[2.1,112.02,47.9,138.4,112.01,47.9,138.3,"2 Launch 4 POLLEN"],[2.15,112.01,47.94,138.4,112.0,47.94,138.4,"2 Launch 4 POLLEN"],[2.2,112.01,47.95,138.4,112.0,47.95,138.4,"2 Launch 4 POLLEN"],[2.25,112.0,47.97,138.4,112.0,47.97,138.4,"2 Launch 4 POLLEN"],[2.3,112.0,47.97,138.4,112.0,47.98,138.4,"2 Launch 4 POLLEN"],[2.36,112.0,47.98,138.4,112.0,47.99,138.4,"2 Launch 4 POLLEN"],[2.41,112.0,47.99,138.4,112.0,47.99,138.4,"2 Launch 4 POLLEN"],[2.46,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.51,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.56,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.61,112.0,47.99,138.4,112.0,48.0,138.3,"2 Launch 4 POLLEN"],[2.66,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.71,112.0,47.99,138.4,112.0,48.0,138.3,"2 Launch 4 POLLEN"],[2.77,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.82,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.87,112.0,47.99,138.4,112.0,48.0,138.3,"2 Launch 4 POLLEN"],[2.92,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[2.97,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.02,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.07,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.12,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.17,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.22,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.27,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.32,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.37,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.42,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.48,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.53,112.0,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.58,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.63,112.01,47.99,138.4,112.0,48.0,138.4,"2 Launch 4 POLLEN"],[3.68,112.01,47.99,138.4,112.0,48.0,138.4,"3 Park in the LOADING ZONE"],[3.73,112.3,47.8,138.4,112.29,47.81,138.4,"3 Park in the LOADING ZONE"],[3.78,113.2,47.2,139.6,112.85,47.43,138.9,"3 Park in the LOADING ZONE"],[3.83,113.96,46.69,141.4,113.96,46.7,141.4,"3 Park in the LOADING ZONE"],[3.88,115.28,45.83,144.7,114.81,46.13,143.5,"3 Park in the LOADING ZONE"],[3.93,116.72,44.88,148.6,116.23,45.21,147.2,"3 Park in the LOADING ZONE"],[3.98,117.73,44.21,151.3,117.72,44.22,151.3,"3 Park in the LOADING ZONE"],[4.03,119.12,43.28,156.9,118.67,43.59,155.0,"3 Park in the LOADING ZONE"],[4.08,120.1,42.61,158.8,120.09,42.62,158.8,"3 Park in the LOADING ZONE"],[4.14,121.61,41.58,161.8,121.1,41.93,160.6,"3 Park in the LOADING ZONE"],[4.19,122.6,40.91,164.2,122.59,40.91,164.2,"3 Park in the LOADING ZONE"],[4.24,124.07,39.91,167.6,123.57,40.25,166.5,"3 Park in the LOADING ZONE"],[4.29,125.03,39.25,169.8,125.02,39.25,169.8,"3 Park in the LOADING ZONE"],[4.34,126.47,38.27,173.0,125.98,38.6,171.9,"3 Park in the LOADING ZONE"],[4.39,127.35,37.67,175.2,127.34,37.68,175.2,"3 Park in the LOADING ZONE"],[4.44,128.32,37.01,177.5,127.98,37.24,176.9,"3 Park in the LOADING ZONE"],[4.49,128.99,36.57,178.4,128.67,36.78,178.0,"3 Park in the LOADING ZONE"],[4.54,129.58,36.2,179.2,129.57,36.2,179.2,"3 Park in the LOADING ZONE"],[4.59,129.8,36.06,179.6,129.79,36.07,179.5,"3 Park in the LOADING ZONE"],[4.64,130.06,35.91,179.9,130.05,35.92,179.9,"3 Park in the LOADING ZONE"],[4.69,130.17,35.86,179.9,130.13,35.88,179.9,"3 Park in the LOADING ZONE"],[4.74,130.2,35.85,179.9,130.18,35.86,179.9,"Done: parked, holding position"],[4.79,130.19,35.86,179.9,130.19,35.86,179.9,"Done: parked, holding position"],[4.84,130.18,35.88,180.0,130.17,35.88,180.0,"Done: parked, holding position"],[4.9,130.15,35.9,180.0,130.15,35.9,180.0,"Done: parked, holding position"],[4.95,130.13,35.92,180.0,130.13,35.92,180.0,"Done: parked, holding position"],[5.0,130.09,35.94,180.0,130.09,35.94,180.0,"Done: parked, holding position"],[5.05,130.08,35.95,180.0,130.07,35.95,180.0,"Done: parked, holding position"],[5.1,130.05,35.96,180.0,130.05,35.97,180.0,"Done: parked, holding position"],[5.15,130.04,35.97,180.0,130.03,35.98,180.0,"Done: parked, holding position"],[5.2,130.03,35.98,180.0,130.02,35.99,180.0,"Done: parked, holding position"],[5.25,130.02,35.98,180.0,130.01,35.99,180.0,"Done: parked, holding position"],[5.3,130.02,35.99,180.0,130.01,35.99,180.0,"Done: parked, holding position"],[5.35,130.01,35.99,180.0,130.01,35.99,180.0,"Done: parked, holding position"],[5.4,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.46,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.51,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.56,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.61,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.66,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.71,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.76,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.81,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.86,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.91,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[5.96,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[6.01,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[6.06,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[6.11,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[6.16,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"],[6.22,130.01,35.99,180.0,130.0,36.0,180.0,"Done: parked, holding position"]]},"lib":"Pedro Pathing"}],"recorded":"2026-11-08"};
+
+/* ---------- state ---------- */
+const S = { lvl: 0, alli: "red", beat: 0, bt: 0, playing: false, speed: 0.5, last: 0 };
+const READ_SECONDS = 5;      // how long Play pauses on a step with no motion (the hint line counts down, so it never looks stuck)
+const TAIL_SECONDS = 1.2;    // pause after a motion finishes before Play moves on
+
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const L = () => DATA.levels[S.lvl];
+const REC = () => L().rec[S.alli];
+const isBlue = () => S.alli === "blue";
+// field coordinates -> svg (svg y grows downward)
+const X = x => x, Y = y => 144 - y;
+// red spot -> this alliance's spot
+const M = (x, y) => isBlue() ? [144 - x, 144 - y] : [x, y];
+const normDeg = d => { d = ((d % 360) + 360) % 360; return d > 180 ? d - 360 : d; };
+
+/* ---------- recording helpers ---------- */
+function stepRange(rec, names) {
+  let a = null, b = null;
+  for (let i = 0; i < rec.length; i++) {
+    if (names.includes(rec[i][7])) { if (a === null) a = rec[i][0]; b = rec[i][0]; }
+  }
+  // end = first sample after the last one in this step (so the motion finishes)
+  const after = rec.find(r => r[0] > b);
+  return [a, after ? after[0] : b];
+}
+function sampleAt(rec, t) {
+  if (t <= rec[0][0]) return rec[0];
+  for (let i = 1; i < rec.length; i++) {
+    if (rec[i][0] >= t) {
+      const p = rec[i - 1], q = rec[i], f = (t - p[0]) / (q[0] - p[0] || 1);
+      let dh = q[3] - p[3]; if (dh > 180) dh -= 360; if (dh < -180) dh += 360;
+      return [t, p[1] + (q[1] - p[1]) * f, p[2] + (q[2] - p[2]) * f, p[3] + dh * f,
+              p[4] == null ? null : p[4] + (q[4] - p[4]) * f, p[5] == null ? null : p[5] + (q[5] - p[5]) * f,
+              q[6], f < 0.5 ? p[7] : q[7]];
+    }
+  }
+  return rec[rec.length - 1];
+}
+const startT = rec => (rec.find(r => r[7] !== "Waiting for START") || rec[0])[0];
+
+/* What recording time does this beat show at beat-time bt? */
+function recTime(beat, bt) {
+  const rec = REC();
+  if (beat.kind === "still") {
+    if (beat.at === "start") return rec[0][0];
+    const name = beat.at.slice(6);
+    return stepRange(rec, [name])[1];
+  }
+  const [a, b] = stepRange(rec, beat.steps);
+  return Math.min(b, a + bt * S.speed);
+}
+function beatLen(beat) {
+  if (beat.kind === "still") return READ_SECONDS;
+  const [a, b] = stepRange(REC(), beat.steps);
+  const motion = (b - a) / S.speed;
+  return motion + (beat.kind === "hold" ? READ_SECONDS - 2 : TAIL_SECONDS);
+}
+
+/* ---------- code panel ---------- */
+const KW = /\b(double|while|if|else|new|return|boolean|String|void|static|final|int|true|false|Pose|PoseFactory|Path|ElapsedTime)\b/g;
+function hl(line) {
+  let esc = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  let comment = "";
+  const ci = esc.indexOf("//");
+  if (ci >= 0) { comment = '<span class="c">' + esc.slice(ci) + "</span>"; esc = esc.slice(0, ci); }
+  const parts = esc.split(/("[^"]*")/);
+  esc = parts.map((p, i) => i % 2 ? '<span class="s">' + p + "</span>" :
+      p.replace(KW, '<span class="k">$1</span>')
+       .replace(/\b(\d+(\.\d+)?)\b/g, '<span class="num">$1</span>')
+       .replace(/\.([a-zA-Z_]\w*)(?=\()/g, '.<span class="m">$1</span>')
+       .replace(/^(\s*)([a-zA-Z_]\w*)(?=\()/g, '$1<span class="m">$2</span>')
+       .replace(/([\s(=,])(line|curve|drivePath)(?=\()/g, '$1<span class="m">$2</span>')).join("");
+  return esc + comment;
+}
+function drawCode() {
+  const box = $("code"); box.innerHTML = "";
+  L().code.forEach((line, i) => {
+    const d = document.createElement("div");
+    d.className = "ln"; d.dataset.n = i + 1;
+    const ind = line.match(/^ */)[0].length + 2;   // wrapped part of a long line starts 2 spaces past the line's own indent
+    d.innerHTML = '<span class="n">' + (i + 1) + '</span><span class="t" style="padding-left:' + ind + 'ch;text-indent:-' + ind + 'ch">' + (hl(line) || " ") + "</span>";
+    box.appendChild(d);
+  });
+  $("fname").textContent = L().file;
+  $("ctag").textContent = L().tab.split(":")[0] + " · " + (L().lib || "");   // for example "Autonomous Level 1 · Pedro Pathing"
+  $("ctag").style.background = L().lib === "Road Runner" ? "#7b3fb5" : "#5f5f66";
+}
+function markCode(beat) {
+  const box = $("code"), on = new Set();
+  beat.code.forEach(([a, b]) => { for (let n = a; n <= b; n++) on.add(n); });
+  let first = null;
+  box.querySelectorAll(".ln").forEach(d => {
+    const h = on.has(+d.dataset.n); d.classList.toggle("hi", h);
+    if (h && first === null) first = d;
+  });
+  if (first) {
+    const target = first.offsetTop - 40;
+    box.scrollTo({ top: Math.max(0, target), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+}
+
+/* ---------- field ---------- */
+let G = {};
+function drawFieldBase() {
+  const svg = $("field"); svg.innerHTML = "";
+  const defs = el("defs", {}, svg);
+  const mk = el("marker", { id: "arr", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto" }, defs);
+  el("path", { d: "M0 0 10 5 0 10z", fill: "#18181b" }, mk);
+  const mk2 = el("marker", { id: "arrp", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto" }, defs);
+  el("path", { d: "M0 0 10 5 0 10z", fill: "#d6338a" }, mk2);
+
+  el("rect", { x: 0, y: 0, width: 144, height: 144, fill: "#9a9a9e", rx: 1 }, svg);
+  for (let i = 1; i < 6; i++) {
+    el("line", { x1: i * 24, y1: 0, x2: i * 24, y2: 144, stroke: "#86868b", "stroke-width": 0.5 }, svg);
+    el("line", { x1: 0, y1: i * 24, x2: 144, y2: i * 24, stroke: "#86868b", "stroke-width": 0.5 }, svg);
+  }
+  // half-field line (AUTO: stay on your own half, rule G402)
+  el("line", { x1: 72, y1: 0, x2: 72, y2: 144, stroke: "#fff", "stroke-width": 0.5, "stroke-dasharray": "2 2", opacity: 0.7 }, svg);
+  // alliance walls
+  el("rect", { x: -3, y: 0, width: 3, height: 144, fill: "#A60012" }, svg);
+  el("rect", { x: 144, y: 0, width: 3, height: 144, fill: "#1f5fd1" }, svg);
+  el("rect", { x: -3, y: -3, width: 150, height: 3, fill: "#555" }, svg);
+  el("rect", { x: -3, y: 144, width: 150, height: 3, fill: "#555" }, svg);
+  // labels
+  "ABCDEF".split("").forEach((c, i) => el("text", { x: 12 + 24 * i, y: 153, "font-size": 5, "text-anchor": "middle", fill: "#5f5f66", "font-weight": 700 }, svg, c));
+  for (let r = 1; r <= 6; r++) el("text", { x: -6, y: Y(24 * r - 12) + 2, "font-size": 5, "text-anchor": "middle", fill: "#5f5f66", "font-weight": 700 }, svg, r);
+  el("text", { x: 72, y: 159.5, "font-size": 4.2, "text-anchor": "middle", fill: "#5f5f66", "font-weight": 800, "letter-spacing": 0.6 }, svg, "AUDIENCE");
+  // LOADING ZONES (red on the left wall toward the far side; blue is the same turned around)
+  el("rect", { x: 0, y: Y(120), width: 11, height: 23, fill: "#A60012", opacity: 0.35, stroke: "#A60012", "stroke-width": 0.8 }, svg);
+  el("rect", { x: 133, y: Y(47), width: 11, height: 23, fill: "#1f5fd1", opacity: 0.35, stroke: "#1f5fd1", "stroke-width": 0.8 }, svg);
+  el("text", { x: 0, y: 0, "font-size": 3.1, fill: "#fff", "font-weight": 800, "text-anchor": "middle", transform: `translate(6.6 ${Y(108.5)}) rotate(-90)` }, svg, "LOADING ZONE");
+  el("text", { x: 0, y: 0, "font-size": 3.1, fill: "#fff", "font-weight": 800, "text-anchor": "middle", transform: `translate(137.4 ${Y(35.5)}) rotate(90)` }, svg, "LOADING ZONE");
+  // HIVE structure (frame) with the red and blue HIVES
+  el("rect", { x: 47.3, y: Y(91.5), width: 49.4, height: 39, fill: "none", stroke: "#3a3a3d", "stroke-width": 0.8, "stroke-dasharray": "1.5 1" }, svg);
+  [[59.25, "#A60012", "RED HIVE"], [84.75, "#1f5fd1", "BLUE HIVE"]].forEach(([cx, col, name]) => {
+    el("rect", { x: cx - 10, y: Y(89), width: 20, height: 34, rx: 2, fill: "#d8d6d7", stroke: col, "stroke-width": 1.2 }, svg);
+    el("rect", { x: cx - 8, y: Y(87), width: 16, height: 12, rx: 1, fill: "none", stroke: col, "stroke-width": 0.6 }, svg);
+    el("rect", { x: cx - 8, y: Y(69), width: 16, height: 12, rx: 1, fill: "none", stroke: col, "stroke-width": 0.6 }, svg);
+    el("text", { x: cx, y: Y(52.5) + 4.6, "font-size": 3.4, "text-anchor": "middle", fill: col, "font-weight": 800 }, svg, name);
+  });
+
+  G.paths = el("g", {}, svg);
+  G.trail = el("polyline", { fill: "none", stroke: "#2fd16b", "stroke-width": 1.1, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+  G.aim = el("line", { stroke: "#fff", "stroke-width": 0.7, "stroke-dasharray": "1.6 1.2", visibility: "hidden" }, svg);
+  G.markers = el("g", {}, svg);
+  G.robot = el("g", {}, svg);
+  drawRobot(G.robot);
+  G.balls = el("g", {}, svg);
+  G.tag = el("g", { visibility: "hidden" }, svg);
+  el("rect", { x: 36, y: 132, width: 72, height: 8, rx: 2, fill: "#fff7d6", stroke: "#f6c700", "stroke-width": 0.6 }, G.tag);
+  el("text", { x: 72, y: 137.3, "font-size": 3.6, "text-anchor": "middle", "font-weight": 800, fill: "#18181b" }, G.tag, "Pretend launch: the launcher isn't built yet");
+}
+function drawRobot(g) {
+  // Robot drawn in its own frame: front = +x (right), left = up. 18 x 18 in, like the Mecanum Odometry Bot in the simulator.
+  const b = el("g", {}, g);
+  [[-8, -9.6], [4, -9.6], [-8, 7.2], [4, 7.2]].forEach(([x, y]) => el("rect", { x, y, width: 5.2, height: 2.4, rx: 0.8, fill: "#2b2b2e" }, b));
+  el("rect", { x: -8.4, y: -7.4, width: 16.8, height: 14.8, rx: 2, fill: "#f08a24", stroke: "#a85a0c", "stroke-width": 0.6 }, b);
+  // 3 odometry pods (left, right, sideways), placeholder spots like the Mecanum Odometry Bot
+  el("rect", { x: -1.5, y: -7.2, width: 3, height: 1.4, fill: "#1f5fd1" }, b);
+  el("rect", { x: -1.5, y: 5.8, width: 3, height: 1.4, fill: "#1f5fd1" }, b);
+  el("rect", { x: -3.7, y: -1.5, width: 1.4, height: 3, fill: "#1f5fd1" }, b);
+  // intake roller at the front
+  el("rect", { x: 7.4, y: -6, width: 1.8, height: 12, rx: 0.9, fill: "#2e7d32" }, b);
+  // heading arrow
+  el("path", { d: "M-1 0h7", stroke: "#18181b", "stroke-width": 1.2, "marker-end": "url(#arr)" }, b);
+  G.preload = el("g", {}, b);
+  [[-5, -3], [-5, 3], [1.5, -3], [1.5, 3]].forEach(([x, y]) => el("circle", { cx: x, cy: y, r: 1.4, fill: "#f6c700", stroke: "#8a6d00", "stroke-width": 0.3 }, G.preload));
+}
+function placeRobot(x, y, h) {
+  // svg y is flipped, so a counterclockwise field heading is a negative svg rotation
+  G.robot.setAttribute("transform", `translate(${X(x)} ${Y(y)}) rotate(${-h})`);
+}
+function markerSpot(name) { const m = L().markers[name]; return M(m[0], m[1]); }
+function drawPlan(beat) {
+  G.paths.innerHTML = ""; G.markers.innerHTML = "";
+  const lv = L();
+  beat.paths.forEach(pid => {
+    const p = lv.paths[pid], act = beat.active === pid;
+    if (p.kind === "rec") {   // Road Runner: draw the path the robot really took (it follows its plan closely)
+      const pts = REC().filter(r => p.steps.includes(r[7])).map(r => `${X(r[1]).toFixed(2)},${Y(r[2]).toFixed(2)}`);
+      el("polyline", { points: pts.join(" "), fill: "none", stroke: "#fff", "stroke-width": act ? 1.4 : 0.8, "stroke-dasharray": "2.4 1.6", opacity: act ? 1 : 0.6 }, G.paths);
+      return;
+    }
+    const pts = p.pts.map(markerSpot);
+    let d;
+    if (p.kind === "line") d = `M${X(pts[0][0])} ${Y(pts[0][1])} L${X(pts[1][0])} ${Y(pts[1][1])}`;
+    else {
+      d = `M${X(pts[0][0])} ${Y(pts[0][1])} Q${X(pts[1][0])} ${Y(pts[1][1])} ${X(pts[2][0])} ${Y(pts[2][1])}`;
+      el("path", { d: `M${X(pts[0][0])} ${Y(pts[0][1])} L${X(pts[1][0])} ${Y(pts[1][1])} L${X(pts[2][0])} ${Y(pts[2][1])}`, fill: "none", stroke: "#d6338a", "stroke-width": 0.5, "stroke-dasharray": "1.2 1", opacity: act ? 0.95 : 0.5 }, G.paths);
+    }
+    el("path", { d, fill: "none", stroke: "#fff", "stroke-width": act ? 1.4 : 0.8, "stroke-dasharray": "2.4 1.6", opacity: act ? 1 : 0.6 }, G.paths);
+  });
+  beat.markers.forEach(name => {
+    const [x, y] = markerSpot(name);
+    const mm = L().markers[name];
+    if (mm.length > 5) {      // a tangent: an arrow showing the direction of travel
+      const a = (mm[5] + (isBlue() ? 180 : 0)) * Math.PI / 180;
+      const x2 = x + Math.cos(a) * 16, y2 = y + Math.sin(a) * 16;
+      el("line", { x1: X(x), y1: Y(y), x2: X(x2), y2: Y(y2), stroke: "#d6338a", "stroke-width": 1.3, "marker-end": "url(#arrp)" }, G.markers);
+      const dx = isBlue() ? -mm[3] : mm[3], dy = isBlue() ? -mm[4] : mm[4];
+      el("text", { x: X(x) + dx, y: Y(y) + dy, "font-size": 3.8, "font-weight": 800, fill: "#d6338a", "text-anchor": "middle",
+        "paint-order": "stroke", stroke: "#fff", "stroke-width": 1.4, "font-family": "JetBrains Mono, monospace" }, G.markers, mm[2]);
+      return;
+    }
+    const isHive = name === "hive", isBend = name === "bend";
+    const col = isBend ? "#d6338a" : isHive ? "#fff" : "#18181b";
+    if (isHive) {
+      el("circle", { cx: X(x), cy: Y(y), r: 2.6, fill: "none", stroke: "#fff", "stroke-width": 0.8 }, G.markers);
+      el("path", { d: `M${X(x) - 4} ${Y(y)}h8M${X(x)} ${Y(y) - 4}v8`, stroke: "#fff", "stroke-width": 0.6 }, G.markers);
+    } else {
+      el("circle", { cx: X(x), cy: Y(y), r: 1.5, fill: col, stroke: "#fff", "stroke-width": 0.5 }, G.markers);
+    }
+    // label offset is written for the red side; turn it around for blue like the spot itself
+    const m = L().markers[name], label = m[2];
+    const dx = isBlue() ? -m[3] : m[3], dy = isBlue() ? -m[4] : m[4];
+    const anchor = dx > 0 ? "start" : dx < 0 ? "end" : "middle";
+    const ly = Y(y) + dy + (dy < 0 ? 0 : 1.4);
+    el("text", { x: X(x) + dx, y: ly, "font-size": 4, "font-weight": 800, fill: col, "text-anchor": anchor,
+      "paint-order": "stroke", stroke: isHive ? "#6b6b70" : "#fff", "stroke-width": 1.4, "font-family": "JetBrains Mono, monospace" }, G.markers, label);
+  });
+}
+
+/* ---------- render one moment ---------- */
+function render() {
+  const lv = L(), beat = lv.beats[S.beat], rec = REC();
+  const t = recTime(beat, S.bt);
+  const s = sampleAt(rec, t);
+  placeRobot(s[1], s[2], s[3]);
+
+  // trail: everything recorded from START up to now
+  const t0 = startT(rec), pts = [];
+  for (const r of rec) { if (r[0] < t0) continue; if (r[0] > t) break; pts.push(`${X(r[1]).toFixed(2)},${Y(r[2]).toFixed(2)}`); }
+  pts.push(`${X(s[1]).toFixed(2)},${Y(s[2]).toFixed(2)}`);
+  G.trail.setAttribute("points", t > t0 ? pts.join(" ") : "");
+
+  // aim line to the HIVE point during facingPoint steps
+  if (beat.aim) {
+    const [hx, hy] = markerSpot("hive");
+    G.aim.setAttribute("x1", X(s[1])); G.aim.setAttribute("y1", Y(s[2]));
+    G.aim.setAttribute("x2", X(hx)); G.aim.setAttribute("y2", Y(hy));
+    G.aim.setAttribute("visibility", "visible");
+  } else G.aim.setAttribute("visibility", "hidden");
+
+  // pre-loaded POLLEN: on the robot until launched (Level 2 only)
+  const launchBeat = lv.beats.findIndex(b => b.kind === "launch");
+  const launched = launchBeat >= 0 && S.beat > launchBeat;
+  drawBalls(beat, s, launchBeat);
+  const inLaunch = beat.kind === "launch";
+  const shown = launchBeat < 0 ? 0 : launched ? 0 : inLaunch ? Math.max(0, 4 - ballsGone()) : 4;
+  [...G.preload.children].forEach((c, i) => c.setAttribute("visibility", i < shown ? "visible" : "hidden"));
+  G.tag.setAttribute("visibility", inLaunch ? "visible" : "hidden");
+
+  // telemetry, as the Driver Station would show it
+  const started = t >= t0 && beat.kind !== "still" || (beat.kind === "still" && beat.at !== "start");
+  // at the very end of a step the next sample already carries the next step's name: keep this step's name
+  let step = started ? s[7] : "Waiting for START";
+  if (beat.steps && !beat.steps.includes(step)) step = beat.steps[beat.steps.length - 1];
+  if (beat.kind === "still" && beat.at.startsWith("after:")) step = beat.at.slice(6);
+  const px = s[4], py = s[5], ph = s[6];
+  let html = '<span class="ttl">Driver Station telemetry</span>';
+  html += `<span>Alliance</span><b>${S.alli.toUpperCase()}</b>`;
+  html += `<span>Step</span><b>${step}</b>`;
+  html += `<span>AUTO time used</span><b>${started ? Math.max(0, t - t0).toFixed(1) : "0.0"} of 30 s</b>`;
+  if (started && px != null) {
+    const o = lv.origin || 0;
+    html += `<span>Position (in${o ? ", from center" : ""})</span><b>x ${(px - o).toFixed(1)}   y ${(py - o).toFixed(1)}</b>`;
+    html += `<span>Heading (deg)</span><b>${normDeg(ph).toFixed(0)}</b>`;
+  } else {
+    html += `<span>Position (in)</span><b>(set at START)</b>`;
+  }
+  if (inLaunch) html += '<span class="msg">Launcher: not built yet (would launch 4 here)</span>';
+  $("tele").innerHTML = html;
+}
+let ballState = 0;
+const ballsGone = () => ballState;
+function drawBalls(beat, s, launchBeat) {
+  G.balls.innerHTML = ""; ballState = 0;
+  if (beat.kind !== "launch") return;
+  const [a, b] = stepRange(REC(), beat.steps);
+  const tt = Math.min(b - a, S.bt * S.speed);          // seconds into the launch (recording time)
+  const [hx, hy] = markerSpot("hive");
+  const h = s[3] * Math.PI / 180;
+  const sx = s[1] + Math.cos(h) * 6, sy = s[2] + Math.sin(h) * 6;
+  for (let i = 0; i < 4; i++) {
+    const t0 = 0.15 + i * 0.4, f = (tt - t0) / 0.6;
+    if (f < 0) continue;
+    if (f >= 1) { ballState++; continue; }
+    ballState++;
+    const x = sx + (hx - sx) * f, y = sy + (hy - sy) * f;
+    const lift = Math.sin(f * Math.PI);                // higher in the middle of the flight
+    el("ellipse", { cx: X(x), cy: Y(y), rx: 1.4, ry: 0.8, fill: "#000", opacity: 0.25 }, G.balls);
+    el("circle", { cx: X(x), cy: Y(y) - lift * 10, r: 1.4 + lift * 1.4, fill: "#f6c700", stroke: "#8a6d00", "stroke-width": 0.3 }, G.balls);
+  }
+}
+
+/* ---------- caption, dots, controls ---------- */
+function drawCaption() {
+  const lv = L(), beat = lv.beats[S.beat];
+  let h = `<span class="stepno">Step ${S.beat + 1} of ${lv.beats.length}</span><h2>${beat.title}</h2><p>${beat.say}</p><div class="why"><b>Why:</b> ${beat.why}</div>`;
+  if (isBlue() && S.beat === 0) h += lv.lib === "Road Runner"
+    ? `<div class="bluenote">Blue alliance: the same code. <code>spot()</code> turns every red spot half a turn around the field center, so the robot starts at (63, 0) facing 180.</div>`
+    : `<div class="bluenote">Blue alliance: the same code. <code>mirrorAroundPoint(72, 72)</code> turns every red spot half a turn around the field center, so the robot starts at (135, 72) facing 180.</div>`;
+  $("caption").innerHTML = h;
+  $("dots").innerHTML = "";
+  lv.beats.forEach((b, i) => {
+    const d = document.createElement("button");
+    d.className = "dot" + (i === S.beat ? " on" : i < S.beat ? " done" : "");
+    d.setAttribute("aria-label", `Step ${i + 1}: ${b.title}`);
+    d.title = b.title;
+    d.onclick = () => go(i, false);
+    $("dots").appendChild(d);
+  });
+  $("prev").disabled = S.beat === 0;
+}
+function setPlayLabel() {
+  $("play").innerHTML = S.playing
+    ? '<svg viewBox="0 0 16 16"><path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>Pause'
+    : '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>Play';
+}
+function go(i, keepPlaying) {
+  const lv = L();
+  S.beat = Math.max(0, Math.min(lv.beats.length - 1, i));
+  S.bt = 0;
+  if (!keepPlaying) S.playing = lv.beats[S.beat].kind !== "still";   // motion steps play by themselves
+  const beat = lv.beats[S.beat];
+  drawPlan(beat); markCode(beat); drawCaption(); setPlayLabel(); render(); progressUI();
+}
+// The first steps only explain the code (no motion), so Play could look stuck.
+// The current step's dot fills up as time passes, and a hint line says when the robot starts driving.
+function progressUI() {
+  const lv = L(), beat = lv.beats[S.beat], len = beatLen(beat);
+  const dot = document.querySelector(".dot.on");
+  if (dot) {
+    const pct = Math.round(Math.min(1, S.bt / len) * 100);
+    dot.style.background = (S.playing || S.bt > 0) && pct < 100
+      ? `linear-gradient(to right, var(--red) ${pct}%, #e9b6bd ${pct}%)` : "";
+  }
+  const firstMove = lv.beats.findIndex(b => b.kind !== "still");
+  let text = "";
+  if (firstMove > 0 && S.beat < firstMove) {
+    if (S.playing && S.autoAll) {
+      let secs = len - S.bt;
+      for (let i = S.beat + 1; i < firstMove; i++) secs += beatLen(lv.beats[i]);
+      text = `Reading time. The robot starts driving at <b>step ${firstMove + 1}</b>, in ${Math.max(1, Math.ceil(secs))} s.`;
+    } else {
+      text = `Press <b>Play</b> to run every step, or <b>Next</b> to go one at a time. The robot starts driving at <b>step ${firstMove + 1}</b>.`;
+    }
+  }
+  if ($("hint").innerHTML !== text) $("hint").innerHTML = text;
+}
+function loadLevel(i) {
+  S.lvl = i; S.beat = 0; S.bt = 0; S.playing = false;
+  document.querySelectorAll("#levelTabs .pill").forEach((b, j) => b.setAttribute("aria-pressed", j === i));
+  drawCode(); drawFieldBase(); go(0, false);
+  $("recnote").textContent = `Robot motion and telemetry: recorded from the Virtual Robot simulator running ${L().file} (${DATA.recorded}). A real robot is slower. Opmode name on the Driver Station: "${L().opmode}". Points: ${L().points}.`;
+}
+
+function tick(now) {
+  const dt = Math.min(0.25, (now - (S.last || now)) / 1000); S.last = now;
+  if (S.playing) {
+    const beat = L().beats[S.beat];
+    S.bt += dt;
+    const len = beatLen(beat);
+    if (S.bt >= len) {
+      if (S.autoAll && S.beat < L().beats.length - 1) { go(S.beat + 1, true); }
+      else { S.bt = len; S.playing = false; setPlayLabel(); if (S.beat === L().beats.length - 1) S.autoAll = false; }
+    }
+    render(); progressUI();
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- wire up ---------- */
+DATA.levels.forEach((lv, i) => {
+  const b = document.createElement("button");
+  b.className = "pill"; b.textContent = lv.tab; b.onclick = () => loadLevel(i);
+  $("levelTabs").appendChild(b);
+});
+document.querySelectorAll(".alli .pill").forEach(b => b.onclick = () => {
+  S.alli = b.dataset.a;
+  document.querySelectorAll(".alli .pill").forEach(x => x.setAttribute("aria-pressed", x === b));
+  go(S.beat, false);
+});
+document.querySelectorAll(".speed .pill").forEach(b => b.onclick = () => {
+  // keep the robot where it is when the speed changes
+  const beat = L().beats[S.beat];
+  const recNow = S.bt * S.speed;
+  S.speed = +b.dataset.s; S.bt = recNow / S.speed;
+  document.querySelectorAll(".speed .pill").forEach(x => x.setAttribute("aria-pressed", x === b));
+  render();
+});
+$("play").onclick = () => {
+  if (S.playing) { S.playing = false; S.autoAll = false; }
+  else {
+    // Play = run through every step from here, pausing on each explanation
+    if (S.beat === L().beats.length - 1 && S.bt >= beatLen(L().beats[S.beat])) go(0, true);
+    S.autoAll = true; S.playing = true;
+  }
+  setPlayLabel(); progressUI();
+};
+$("next").onclick = () => { S.autoAll = false; go(S.beat + 1, false); };
+$("prev").onclick = () => { S.autoAll = false; go(S.beat - 1, false); };
+$("replay").onclick = () => { S.bt = 0; S.playing = true; S.autoAll = false; setPlayLabel(); render(); };
+document.addEventListener("keydown", e => {
+  if (e.target.closest("button, a, input")) return;
+  if (e.key === "ArrowRight") $("next").click();
+  else if (e.key === "ArrowLeft") $("prev").click();
+  else if (e.key === " ") { e.preventDefault(); $("play").click(); }
+});
+
+// A link can open a chosen moment, for example  pedro-explainer.html#level=2&alliance=blue&step=4&t=1.5
+// (level 1 or 2, step from 1, t = seconds into that step at the chosen speed)
+(function openFromLink() {
+  const q = new URLSearchParams(location.hash.slice(1));
+  const lvl = Math.max(1, Math.min(DATA.levels.length, +(q.get("level") || 1))) - 1;
+  if (q.get("alliance") === "blue") {
+    S.alli = "blue";
+    document.querySelectorAll(".alli .pill").forEach(x => x.setAttribute("aria-pressed", x.dataset.a === "blue"));
+  }
+  loadLevel(lvl);
+  if (q.get("step")) {
+    go((+q.get("step") || 1) - 1, false);
+    S.playing = false; setPlayLabel();
+    if (q.get("t")) { S.bt = +q.get("t"); render(); }
+  }
+})();
+// Fit the player to the screen: --ph = the screen height left below the title and tabs.
+// The code, the field and the step notes all use it, so a laptop shows all three without scrolling.
+function fitPlayer() {
+  const top = document.querySelector(".player").offsetTop;
+  const h = Math.max(380, window.innerHeight - top - 14);
+  document.documentElement.style.setProperty("--ph", h + "px");
+}
+fitPlayer();
+window.addEventListener("resize", fitPlayer);
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

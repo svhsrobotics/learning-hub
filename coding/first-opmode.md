@@ -76,6 +76,8 @@ public class MyFirstTeleOp extends LinearOpMode {
 | `robot.drive(...)` | Asks the hardware class to drive | The OpMode decides **what** to do; the hardware class knows **how** |
 | `robot.stopDrive();` | Stops the motors after the loop | Nothing may move after the match ends (G404) |
 
+<div class="hub-tip"><b>How do the 3 numbers in <code>robot.drive()</code> become 4 wheel powers?</b>See <a href="coding/drive-explainer.html">TeleOp: drive with the gamepad</a>.</div>
+
 ### Why the minus sign on the stick?
 
 <figure class="hub-fig"><svg class="hub-svg narrow" viewBox="0 0 440 150" role="img" aria-label="Pushing the stick up reads minus one, pulling it down reads plus one, so the code flips the sign"><circle cx="80" cy="75" r="56" fill="#f6f4f4" stroke="#18181b" stroke-width="2"/><circle cx="80" cy="37" r="20" fill="#3a3a3f"/><path d="M80 75V45" stroke="#3a3a3f" stroke-width="6"/><path d="M146 70V30M139 38l7-8 7 8" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="80" y="146" text-anchor="middle" font-size="12" fill="#5f5f66">pushed up</text><text x="190" y="62" text-anchor="middle" font-size="13" fill="#5f5f66">FTC reads</text><text x="190" y="90" text-anchor="middle" font-size="24" font-weight="800" fill="#A60012">-1.0</text><path d="M232 78h40M264 70l8 8-8 8" fill="none" stroke="#18181b" stroke-width="2"/><text x="252" y="64" text-anchor="middle" font-size="12" font-family="monospace">-y</text><text x="350" y="62" text-anchor="middle" font-size="13" fill="#5f5f66">your code uses</text><text x="350" y="90" text-anchor="middle" font-size="24" font-weight="800" fill="#2e7d32">+1.0</text><text x="350" y="112" text-anchor="middle" font-size="12.5" font-weight="700">= forward</text></svg><figcaption>FTC gamepads report "up" as a negative number. Everyone trips on this once.</figcaption></figure>
@@ -118,3 +120,5 @@ robot.stopDrive();
 ```
 
 <div class="hub-trap"><b>Watch out: a loop missing one of the three</b>It's an easy mistake, and the robot can keep driving for the whole autonomous period.</div>
+
+<div class="hub-tip"><b>Next step for autonomous</b><a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a> drives to spots on the field instead of until one sensor says stop.</div>

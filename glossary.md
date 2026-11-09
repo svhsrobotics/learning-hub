@@ -72,6 +72,10 @@ Words you'll hear on the team, from Java to the competition rules, in plain Engl
 | **Dead wheels (odometry pods)** | Small extra wheels that aren't powered. They just roll along the floor so encoders can measure movement accurately. |
 | **Pinpoint** | A small goBILDA board that reads the odometry pods and a built-in angle sensor and tells the code the robot's position (x, y and heading). |
 | **AprilTag** | A square black-and-white code (like a QR code) that a camera can recognize. This season they're under the HIVE's cells, facing down. They move when the HIVE tips, so we use them to **aim**, not to find our position on the field. |
+| **Pedro Pathing** | A free add-on library that drives a robot along paths in autonomous, using the odometry pods to correct as it goes. It needs tuning for each robot, and it is not part of FIRST's SDK. Our program uses it: see <a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a>. |
+| **Pose** | A spot on the field plus the way the robot faces: x, y and heading. |
+| **Heading** | Which way the robot faces, in degrees. |
+| **Path** | The route a path library drives between two Poses: a straight line or a curve. |
 | **Road Runner** | A free add-on library that helps a robot follow smooth paths in autonomous. It needs tuning for each robot. Optional for us, and it is not part of FIRST's SDK. |
 
 ## Git and GitHub
