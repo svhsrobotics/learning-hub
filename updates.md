@@ -16,6 +16,14 @@
 
 <p class="hub-lead">News and announcements for everyone in Saucon Valley Robotics. Newest first.</p>
 
+## November 16, 2026: Add Pedro Pathing to Your Team's Code
+
+New page under **Driving the robot**: <a href="#/coding/add-pedro">Add Pedro to your code</a>. It shows how to add the Pedro Pathing library to your team's robot project: 3 lines in one build file, then one copied folder. It takes about 15 minutes and no robot.
+
+Each team does this once, on a branch. The page stops when the project builds with Pedro in it.
+
+New to Pedro? Start with <a href="coding/pedro-explainer.html">Autonomous with Pedro Pathing</a>.
+
 ## November 9, 2026: New Simulator Robot and Two Coding Pages
 
 The Virtual Robot simulator has a new robot: the **Mecanum Odometry Bot**. It has mecanum wheels, 3 odometry pods and an intake, so you can practice driving and autonomous code on your laptop before your team's robot is ready. Any team can use it.

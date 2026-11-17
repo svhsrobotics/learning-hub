@@ -17,7 +17,7 @@ The robot project has a lot of folders. Almost all of them are FIRST's. Only two
 
 **That path is long** because it's the Java **package** name (`org.firstinspires.ftc.teamcode`) written as folders. A package is like a full mailing address, so two files called `RobotHardware.java` can't get mixed up. In Android Studio's "Android" view it collapses into one line.
 
-**The other files** (`build.gradle` and friends) are the build recipe. Leave them alone. The one exception: the lead programmer adds extra libraries, like Road Runner, in `TeamCode/build.gradle`. And never accept Android Studio's offer to upgrade the "Android Gradle Plugin" (see [laptop setup](coding/laptop-setup.md#step-7-first-gradle-sync-and-never-accept-the-agp-upgrade)).
+**The other files** (`build.gradle` and friends) are the build recipe. Leave them alone. The one exception: extra libraries, added by following that library's own instructions (Pedro: see <a href="#/coding/add-pedro">Add Pedro to your code</a>). And never accept Android Studio's offer to upgrade the "Android Gradle Plugin" (see [laptop setup](coding/laptop-setup.md#step-7-first-gradle-sync-and-never-accept-the-agp-upgrade)).
 
 ### What's in TeamCode at the start
 

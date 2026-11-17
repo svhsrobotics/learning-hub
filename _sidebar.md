@@ -12,6 +12,7 @@
 - **Driving the robot**
   - [TeleOp: drive with the gamepad](coding/drive-explainer.html ':ignore :target=_self')
   - [Autonomous with Pedro Pathing](coding/pedro-explainer.html ':ignore :target=_self')
+  - [Add Pedro to your code](coding/add-pedro.md)
 - **Your tools**
   - [Setting up your laptop](coding/laptop-setup.md)
   - [Try the Virtual Robot](coding/simulator.md)
